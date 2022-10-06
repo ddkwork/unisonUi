@@ -4,6 +4,8 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/ddkwork/golibrary v0.0.0-20220921141857-f524c991a6fc h1:AVKcb712t597s0k1h0HAk5BeR/SWE49yGZ/9+HwSvkk=
 github.com/ddkwork/golibrary v0.0.0-20220921141857-f524c991a6fc/go.mod h1:lNyUwUVKlzGG41WE5sVFysH6AY0obRHhhANcOk+RLD8=
+github.com/ddkwork/golibrary v0.0.0-20221006033826-9b25824bb9de h1:7zsYcwyCx0fPu2xJqypY35yXp7bzbogyPrHZcue68ng=
+github.com/ddkwork/golibrary v0.0.0-20221006033826-9b25824bb9de/go.mod h1:YHeOcO6eK+e8ygYFzV7LdvgPtg82a+V4DySHv/07kCs=
 github.com/fatih/color v1.7.0 h1:DkWD4oS2D8LGGgTQ6IvwJJXSL5Vp2ffcQg58nFV38Ys=
 github.com/fatih/color v1.7.0/go.mod h1:Zm6kSWBoL9eyXnKyktHP6abPY2pDugNf5KwzbycvMj4=
 github.com/go-gl/gl v0.0.0-20211210172815-726fda9656d6 h1:zDw5v7qm4yH7N8C8uWd+8Ii9rROdgWxQuGoJ9WDXxfk=
