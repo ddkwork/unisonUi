@@ -3,7 +3,7 @@ module github.com/ddkwork/unisonUi
 go 1.19
 
 require (
-	github.com/ddkwork/golibrary v0.0.0-20221006062635-8377531e0ce2
+	github.com/ddkwork/golibrary v0.0.0-20221008014230-2f4d1d89d38d
 	github.com/google/uuid v1.3.0
 	github.com/richardwilkes/toolbox v1.76.0
 	github.com/richardwilkes/unison v0.35.0
