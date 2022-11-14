@@ -5,26 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="25326ad3-4455-418d-98ac-719210312991" name="变更" comment="变更">
-      <change afterPath="$PROJECT_DIR$/packets/bodyErrorKind.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/packets/bodyKind.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/packets/objects.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/objects/bodyErrorKind.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/objects/bodyKind.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/objects/objects.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/objects/packetFieldKind.go" beforeDir="false" afterPath="$PROJECT_DIR$/packets/packetFieldKind.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/objects/util.go" beforeDir="false" afterPath="$PROJECT_DIR$/packets/util.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packet/about.go" beforeDir="false" afterPath="$PROJECT_DIR$/about.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packet/demo_row.go" beforeDir="false" afterPath="$PROJECT_DIR$/demo_row.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packet/dockable_panel.go" beforeDir="false" afterPath="$PROJECT_DIR$/dockable_panel.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packet/mitm.go" beforeDir="false" afterPath="$PROJECT_DIR$/mitm.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packet/mock.go" beforeDir="false" afterPath="$PROJECT_DIR$/mock.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packet/packet.go" beforeDir="false" afterPath="$PROJECT_DIR$/packet.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packet/resources/classic-apple-logo.png" beforeDir="false" afterPath="$PROJECT_DIR$/resources/classic-apple-logo.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packet/resources/home.png" beforeDir="false" afterPath="$PROJECT_DIR$/resources/home.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packet/resources/mountains.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/resources/mountains.jpg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packet/row.go" beforeDir="false" afterPath="$PROJECT_DIR$/row.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/unison.go" beforeDir="false" afterPath="$PROJECT_DIR$/unison.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo_row.go" beforeDir="false" afterPath="$PROJECT_DIR$/demo_row.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

@@ -1,20 +1,10 @@
-// Copyright ©2021-2022 by Richard A. Wilkes. All rights reserved.
-//
-// This Source Code Form is subject to the terms of the Mozilla Public
-// License, version 2.0. If a copy of the MPL was not distributed with
-// this file, You can obtain one at http://mozilla.org/MPL/2.0/.
-//
-// This Source Code Form is "Incompatible With Secondary Licenses", as
-// defined by the Mozilla Public License, version 2.0.
-
 package main
 
 import (
-	"strconv"
-
 	"github.com/google/uuid"
 	"github.com/richardwilkes/toolbox/log/jot"
 	"github.com/richardwilkes/unison"
+	"strconv"
 )
 
 var _ unison.TableRowData[*demoRow] = &demoRow{}
@@ -44,29 +34,12 @@ func (d *demoRow) CloneForTarget(target unison.Paneler, newParent *demoRow) *dem
 	return &clone
 }
 
-func (d *demoRow) UUID() uuid.UUID {
-	return d.id
-}
-
-func (d *demoRow) Parent() *demoRow {
-	return d.parent
-}
-
-func (d *demoRow) SetParent(parent *demoRow) {
-	d.parent = parent
-}
-
-func (d *demoRow) CanHaveChildren() bool {
-	return d.container
-}
-
-func (d *demoRow) Children() []*demoRow {
-	return d.children
-}
-
-func (d *demoRow) SetChildren(children []*demoRow) {
-	d.children = children
-}
+func (d *demoRow) UUID() uuid.UUID                 { return d.id }
+func (d *demoRow) Parent() *demoRow                { return d.parent }
+func (d *demoRow) SetParent(parent *demoRow)       { d.parent = parent }
+func (d *demoRow) CanHaveChildren() bool           { return d.container }
+func (d *demoRow) Children() []*demoRow            { return d.children }
+func (d *demoRow) SetChildren(children []*demoRow) { d.children = children }
 
 func (d *demoRow) CellDataForSort(index int) string {
 	switch index {
@@ -142,10 +115,5 @@ func addWrappedText(parent *unison.Panel, text string, ink unison.Ink, font unis
 	}
 }
 
-func (d *demoRow) IsOpen() bool {
-	return d.open
-}
-
-func (d *demoRow) SetOpen(open bool) {
-	d.open = open
-}
+func (d *demoRow) IsOpen() bool      { return d.open }
+func (d *demoRow) SetOpen(open bool) { d.open = open }
