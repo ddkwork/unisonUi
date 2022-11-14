@@ -61,7 +61,7 @@ func CanvasObject(where unison.Point) (ok bool) {
 	content.SetLayout(&unison.FlexLayout{Columns: 1})
 	content.AddChild(createToolBar())
 	content.AddChild(CreatTable()) //todo set high
-	//content.AddChild(createFilter())
+	content.AddChild(createFilter())
 	content.AddChild(createBodyView())
 
 	w.Pack()
@@ -220,7 +220,7 @@ func CreatTable() *unison.Panel {
 		Bottom: 200,
 		Right:  0,
 	}))
-	scrollArea.Sync()
+	//scrollArea.Sync()
 	panel.AddChild(scrollArea)
 	return panel
 }
