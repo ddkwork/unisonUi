@@ -86,10 +86,6 @@ func CreatTable() *unison.Panel {
 		Columns: 1,
 	})
 
-	//dock.SetLayout(&unison.FlexLayout{
-	//	Columns:  1,
-	//	VSpacing: 300,
-	//})
 	//panel.SetSizer(func(hint unison.Size) (min, pref, max unison.Size) {
 	//	//pref.Width = 200
 	//	//pref.Height = 100
@@ -208,7 +204,6 @@ func CreatTable() *unison.Panel {
 	panel.AddChild(header)
 
 	// Create a scroll panel and place a table panel inside it
-	scrollArea := unison.NewScrollPanel()
 	scrollArea.SetContent(table, unison.FillBehavior, unison.FillBehavior)
 	scrollArea.SetLayoutData(&unison.FlexLayoutData{
 		HAlign: unison.FillAlignment,
@@ -228,6 +223,9 @@ func CreatTable() *unison.Panel {
 	panel.AddChild(scrollArea)
 	return panel
 }
+
+var scrollArea = unison.NewScrollPanel()
+
 func installDefaultMenus(wnd *unison.Window) {
 	unison.DefaultMenuFactory().BarForWindow(wnd, func(m unison.Menu) {
 		unison.InsertStdMenus(m, ShowAboutWindow, nil, nil)
