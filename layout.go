@@ -114,7 +114,7 @@ func CreatTable() *unison.Panel {
 	}
 	table.ColumnSizes = make([]unison.ColumnSize, len(o.Header())+1)
 	for i := range table.ColumnSizes {
-		table.ColumnSizes[i].Minimum = 20
+		table.ColumnSizes[i].Minimum = 90
 		table.ColumnSizes[i].Maximum = 10000
 	}
 	_, checkColSize, _ := unison.NewCheckBox().Sizes(unison.Size{})
