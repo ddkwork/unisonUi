@@ -3,7 +3,7 @@ module github.com/ddkwork/unisonUi
 go 1.19
 
 require (
-	github.com/ddkwork/golibrary v0.0.0-20221109170925-13b82316d314
+	github.com/ddkwork/golibrary v0.0.0-20221113204534-53f156e65729
 	github.com/google/uuid v1.3.0
 	github.com/richardwilkes/gcs/v5 v5.3.1
 	github.com/richardwilkes/toolbox v1.78.0
@@ -36,7 +36,7 @@ require (
 	golang.org/x/exp v0.0.0-20221106115401-f9659909a136 // indirect
 	golang.org/x/image v0.1.0 // indirect
 	golang.org/x/mod v0.6.0 // indirect
-	golang.org/x/net v0.1.0 // indirect
+	golang.org/x/net v0.1.1-0.20221102181756-a1278a7f7ee0 // indirect
 	golang.org/x/sys v0.2.0 // indirect
 	golang.org/x/text v0.4.0 // indirect
 	golang.org/x/tools v0.2.0 // indirect
