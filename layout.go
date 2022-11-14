@@ -61,8 +61,9 @@ func CanvasObject(where unison.Point) (ok bool) {
 	content.SetLayout(&unison.FlexLayout{Columns: 1})
 	content.AddChild(createToolBar())
 	content.AddChild(CreatTable()) //todo set high
-	content.AddChild(createFilter())
+	//content.AddChild(createFilter())
 	content.AddChild(createBodyView())
+
 	w.Pack()
 	rect := w.FrameRect()
 	rect.Point = where
@@ -81,12 +82,19 @@ var rows = make([]*demoRow, topLevelRowsToMake)
 //var rows = make([]*demoRow, 0)
 
 func CreatTable() *unison.Panel {
-	panel.SetLayout(&unison.FlexLayout{Columns: 1})
-	panel.SetSizer(func(hint unison.Size) (min, pref, max unison.Size) {
-		pref.Width = 200
-		pref.Height = 100
-		return min, pref, unison.MaxSize(max)
+	panel.SetLayout(&unison.FlexLayout{
+		Columns: 1,
 	})
+
+	//dock.SetLayout(&unison.FlexLayout{
+	//	Columns:  1,
+	//	VSpacing: 300,
+	//})
+	//panel.SetSizer(func(hint unison.Size) (min, pref, max unison.Size) {
+	//	//pref.Width = 200
+	//	//pref.Height = 100
+	//	return min, pref, unison.MaxSize(max)
+	//})
 
 	table.HierarchyColumnIndex = 1
 
@@ -115,6 +123,7 @@ func CreatTable() *unison.Panel {
 		table.ColumnSizes[i].Minimum = 100
 		table.ColumnSizes[i].Maximum = 10000
 	}
+
 	//_, checkColSize, _ := unison.NewCheckBox().Sizes(unison.Size{})
 	table.ColumnSizes[0].Minimum = 20
 	//table.ColumnSizes[0].Minimum = checkColSize.Width
@@ -194,6 +203,7 @@ func CreatTable() *unison.Panel {
 		HAlign: unison.FillAlignment,
 		VAlign: unison.FillAlignment,
 		HGrab:  true,
+		VGrab:  true,
 	})
 	panel.AddChild(header)
 
@@ -206,6 +216,15 @@ func CreatTable() *unison.Panel {
 		HGrab:  true,
 		VGrab:  true,
 	})
+	scrollArea.SetLayout(&unison.FlexLayout{
+		Columns: 1,
+	})
+	scrollArea.SetBorder(unison.NewEmptyBorder(unison.Insets{
+		Top:    0,
+		Left:   0,
+		Bottom: 200,
+		Right:  0,
+	}))
 	panel.AddChild(scrollArea)
 	return panel
 }
@@ -224,8 +243,9 @@ func installDefaultMenus(wnd *unison.Window) {
 	})
 }
 
+var dock = unison.NewDock()
+
 func createBodyView() *unison.Dock {
-	dock := unison.NewDock()
 	yellowDockable := NewDockablePanel(packets.NameBodyKind.HttpDump(), "Request", unison.Yellow)
 	dock.DockTo(yellowDockable, nil, unison.TopSide)
 	unison.Ancestor[*unison.DockContainer](yellowDockable).Stack(NewDockablePanel(packets.NameBodyKind.HexDump(), "", unison.Yellow), -1)
@@ -257,12 +277,13 @@ func createBodyView() *unison.Dock {
 
 	dock.SetLayoutData(&unison.FlexLayoutData{
 		HSpan:  1,
-		VSpan:  1,
+		VSpan:  100,
 		HAlign: unison.FillAlignment,
 		VAlign: unison.FillAlignment,
 		HGrab:  true,
 		VGrab:  true,
 	})
+
 	return dock
 }
 
