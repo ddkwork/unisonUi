@@ -220,6 +220,7 @@ func CreatTable() *unison.Panel {
 		Bottom: 200,
 		Right:  0,
 	}))
+	scrollArea.Sync()
 	panel.AddChild(scrollArea)
 	return panel
 }
