@@ -1,7 +1,7 @@
-package packet
+package main
 
 import (
-	"github.com/ddkwork/unisonUi/objects"
+	"github.com/ddkwork/unisonUi/packets"
 	"github.com/google/uuid"
 	"net/http"
 	"sync/atomic"
@@ -13,27 +13,22 @@ func (o *object) mitmMock() {
 	go func() {
 		for i := 0; i < 3; i++ {
 			atomic.AddUint64(&index, 1)
-			packet := objects.Packet{
-				Row: objects.Row{
-					Index:         index,
+			packet := packets.Object{
+				Row: packets.Row{
 					Method:        http.MethodConnect,
 					Scheme:        "https",
-					Url:           "https://github.com/ddkwork/goproxyeeeeeeeee",
+					Host:          "",
+					Path:          "",
 					ContentType:   "protobuf",
 					ContentLength: 2320,
 					Status:        "200 OK",
 					Note:          "http/s message",
-					StartTime:     time.Now(),
+					Process:       "",
 					PadTime:       2,
 				},
-				Expand: objects.Expand{
-					UUID:        uuid.New(),
-					IsWebsocket: false,
-					IsRequest:   false,
-					IsResponse:  false,
-				},
-				Req:  objects.Body{},
-				Resp: objects.Body{},
+				Expand: packets.Expand{},
+				Req:    packets.Body{},
+				Resp:   packets.Body{},
 			}
 			if i%2 == 1 {
 				packet.IsWebsocket = true
@@ -45,20 +40,20 @@ func (o *object) mitmMock() {
 	go func() {
 		for i := 0; i < 3; i++ {
 			atomic.AddUint64(&index, 1)
-			packet := objects.Packet{
-				Row: objects.Row{
-					Index:         index,
+			packet := packets.Object{
+				Row: packets.Row{
 					Method:        http.MethodGet,
 					Scheme:        "wss",
-					Url:           "https://github.com/ddkwork/goproxyrrrr",
+					Host:          "",
+					Path:          "",
 					ContentType:   "json",
 					ContentLength: 2220,
 					Status:        "302 ssOK",
 					Note:          "Websocket message",
-					StartTime:     time.Now(),
+					Process:       "",
 					PadTime:       2,
 				},
-				Expand: objects.Expand{
+				Expand: packets.Expand{
 					UUID:        uuid.New(),
 					IsWebsocket: true,
 					IsUdp:       false,
@@ -66,8 +61,8 @@ func (o *object) mitmMock() {
 					IsRequest:   false,
 					IsResponse:  false,
 				},
-				Req:  objects.Body{},
-				Resp: objects.Body{},
+				Req:  packets.Body{},
+				Resp: packets.Body{},
 			}
 			if i%2 == 1 {
 				packet.IsWebsocket = true
@@ -79,29 +74,22 @@ func (o *object) mitmMock() {
 	go func() {
 		for i := 0; i < 3; i++ {
 			atomic.AddUint64(&index, 1)
-			packet := objects.Packet{
-				Row: objects.Row{
-					Index:         index,
+			packet := packets.Object{
+				Row: packets.Row{
 					Method:        http.MethodPost,
 					Scheme:        "tcp",
-					Url:           "https://github.com/ddkwork/goproxyssssssssssssssssssssss",
+					Host:          "",
+					Path:          "",
 					ContentType:   "html",
 					ContentLength: 2210,
 					Status:        "503 sssOK",
 					Note:          "tcp message",
-					StartTime:     time.Now(),
+					Process:       "",
 					PadTime:       2,
 				},
-				Expand: objects.Expand{
-					UUID:        uuid.New(),
-					IsWebsocket: false,
-					IsUdp:       false,
-					IsTcp:       true,
-					IsRequest:   false,
-					IsResponse:  false,
-				},
-				Req:  objects.Body{},
-				Resp: objects.Body{},
+				Expand: packets.Expand{},
+				Req:    packets.Body{},
+				Resp:   packets.Body{},
 			}
 			if i%2 == 1 {
 				packet.IsWebsocket = true
@@ -113,29 +101,29 @@ func (o *object) mitmMock() {
 	go func() {
 		for i := 0; i < 3; i++ {
 			atomic.AddUint64(&index, 1)
-			packet := objects.Packet{
-				Row: objects.Row{
-					Index:         index,
+			packet := packets.Object{
+				Row: packets.Row{
 					Method:        http.MethodOptions,
 					Scheme:        "udp",
-					Url:           "https://github.com/ddkwork/goproxyzzzzzzzzz",
+					Host:          "",
+					Path:          "",
 					ContentType:   "binary",
 					ContentLength: 1220,
 					Status:        "444 Status",
 					Note:          "udp message",
-					StartTime:     time.Now(),
+					Process:       "",
 					PadTime:       2,
 				},
-				Expand: objects.Expand{
+				Expand: packets.Expand{
 					UUID:        uuid.New(),
 					IsWebsocket: false,
-					IsUdp:       true,
+					IsUdp:       false,
 					IsTcp:       false,
 					IsRequest:   false,
 					IsResponse:  false,
 				},
-				Req:  objects.Body{},
-				Resp: objects.Body{},
+				Req:  packets.Body{},
+				Resp: packets.Body{},
 			}
 			if i%2 == 1 {
 				packet.IsWebsocket = true

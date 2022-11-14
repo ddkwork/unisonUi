@@ -1,11 +1,11 @@
-package packet
+package main
 
 import (
 	_ "embed"
 	"fmt"
 	"github.com/ddkwork/golibrary/mylog"
 	"github.com/ddkwork/unisonUi/asserts"
-	"github.com/ddkwork/unisonUi/objects"
+	"github.com/ddkwork/unisonUi/packets"
 	"github.com/google/uuid"
 	"github.com/richardwilkes/toolbox/log/jot"
 	"github.com/richardwilkes/unison"
@@ -21,10 +21,9 @@ type (
 		Header() []string
 	}
 
-	packets struct{ packets []objects.Packet }
-	object  struct {
-		objects.Packet //set col style
-		packets        packets
+	object struct {
+		packets.Object //set col style
+		packets        []packets.Object
 		table          *unison.Table[*object]
 		parent         *object
 		id             uuid.UUID
@@ -93,13 +92,8 @@ func CreatTable() *unison.Panel {
 	table.HierarchyColumnIndex = 1
 
 	o := &object{
-		Packet: objects.Packet{
-			Row:    objects.Row{},
-			Expand: objects.Expand{},
-			Req:    objects.Body{},
-			Resp:   objects.Body{},
-		},
-		packets: packets{packets: make([]objects.Packet, 0)},
+		Object:  packets.Object{},
+		packets: nil,
 		table:   unison.NewTable[*object](&unison.SimpleTableModel[*object]{}),
 		parent:  nil,
 		id:      uuid.UUID{},
@@ -233,46 +227,34 @@ func installDefaultMenus(wnd *unison.Window) {
 
 func createBodyView() *unison.Dock {
 	dock := unison.NewDock()
-	yellowDockable := NewDockablePanel(objects.NameBodyKind.HttpDump(), "Request", unison.Yellow)
+	yellowDockable := NewDockablePanel(packets.NameBodyKind.HttpDump(), "Request", unison.Yellow)
 	dock.DockTo(yellowDockable, nil, unison.TopSide)
-	unison.Ancestor[*unison.DockContainer](yellowDockable).Stack(NewDockablePanel(objects.NameBodyKind.HexDump(), "", unison.Yellow), -1)
-	unison.Ancestor[*unison.DockContainer](yellowDockable).Stack(NewDockablePanel(objects.NameBodyKind.Steam(), "", unison.Yellow), -1)
-	unison.Ancestor[*unison.DockContainer](yellowDockable).Stack(NewDockablePanel(objects.NameBodyKind.Head(), "", unison.Yellow), -1)
-	unison.Ancestor[*unison.DockContainer](yellowDockable).Stack(NewDockablePanel(objects.NameBodyKind.Pb2(), "", unison.Yellow), -1)
-	unison.Ancestor[*unison.DockContainer](yellowDockable).Stack(NewDockablePanel(objects.NameBodyKind.Pb3(), "", unison.Yellow), -1)
-	unison.Ancestor[*unison.DockContainer](yellowDockable).Stack(NewDockablePanel(objects.NameBodyKind.Tdf(), "", unison.Yellow), -1)
-	unison.Ancestor[*unison.DockContainer](yellowDockable).Stack(NewDockablePanel(objects.NameBodyKind.Taf(), "", unison.Yellow), -1)
-	unison.Ancestor[*unison.DockContainer](yellowDockable).Stack(NewDockablePanel(objects.NameBodyKind.Acc(), "", unison.Yellow), -1)
-	unison.Ancestor[*unison.DockContainer](yellowDockable).Stack(NewDockablePanel(objects.NameBodyKind.Text(), "", unison.Yellow), -1)
-	unison.Ancestor[*unison.DockContainer](yellowDockable).Stack(NewDockablePanel(objects.NameBodyKind.Json(), "", unison.Yellow), -1)
-	unison.Ancestor[*unison.DockContainer](yellowDockable).Stack(NewDockablePanel(objects.NameBodyKind.Html(), "", unison.Yellow), -1)
-	unison.Ancestor[*unison.DockContainer](yellowDockable).Stack(NewDockablePanel(objects.NameBodyKind.Javascript(), "", unison.Yellow), -1)
-	unison.Ancestor[*unison.DockContainer](yellowDockable).Stack(NewDockablePanel(objects.NameBodyKind.Websocket(), "", unison.Yellow), -1)
-	unison.Ancestor[*unison.DockContainer](yellowDockable).Stack(NewDockablePanel(objects.NameBodyKind.Msgpack(), "", unison.Yellow), -1)
-	unison.Ancestor[*unison.DockContainer](yellowDockable).Stack(NewDockablePanel(objects.NameBodyKind.Gzip(), "", unison.Yellow), -1)
-	unison.Ancestor[*unison.DockContainer](yellowDockable).Stack(NewDockablePanel(objects.NameBodyKind.Notes(), "", unison.Yellow), -1)
-	unison.Ancestor[*unison.DockContainer](yellowDockable).Stack(NewDockablePanel(objects.NameBodyKind.GitProxy(), "", unison.Yellow), -1)
+	unison.Ancestor[*unison.DockContainer](yellowDockable).Stack(NewDockablePanel(packets.NameBodyKind.HexDump(), "", unison.Yellow), -1)
+	unison.Ancestor[*unison.DockContainer](yellowDockable).Stack(NewDockablePanel(packets.NameBodyKind.Steam(), "", unison.Yellow), -1)
+	unison.Ancestor[*unison.DockContainer](yellowDockable).Stack(NewDockablePanel(packets.NameBodyKind.ProtoBuf(), "", unison.Yellow), -1)
+	unison.Ancestor[*unison.DockContainer](yellowDockable).Stack(NewDockablePanel(packets.NameBodyKind.Tdf(), "", unison.Yellow), -1)
+	unison.Ancestor[*unison.DockContainer](yellowDockable).Stack(NewDockablePanel(packets.NameBodyKind.Taf(), "", unison.Yellow), -1)
+	unison.Ancestor[*unison.DockContainer](yellowDockable).Stack(NewDockablePanel(packets.NameBodyKind.Acc(), "", unison.Yellow), -1)
+	unison.Ancestor[*unison.DockContainer](yellowDockable).Stack(NewDockablePanel(packets.NameBodyKind.Websocket(), "", unison.Yellow), -1)
+	unison.Ancestor[*unison.DockContainer](yellowDockable).Stack(NewDockablePanel(packets.NameBodyKind.Msgpack(), "", unison.Yellow), -1)
+	unison.Ancestor[*unison.DockContainer](yellowDockable).Stack(NewDockablePanel(packets.NameBodyKind.Notes(), "", unison.Yellow), -1)
+	unison.Ancestor[*unison.DockContainer](yellowDockable).Stack(NewDockablePanel(packets.NameBodyKind.UnitTest(), "", unison.Yellow), -1)
+	unison.Ancestor[*unison.DockContainer](yellowDockable).Stack(NewDockablePanel(packets.NameBodyKind.GitProxy(), "", unison.Yellow), -1)
 
-	blueDockable := NewDockablePanel(objects.NameBodyKind.HttpDump(), "Response", unison.Pink)
+	blueDockable := NewDockablePanel(packets.NameBodyKind.HttpDump(), "Response", unison.Pink)
 	//blueDockable.MayAttemptClose() //todo close button disable
 	dock.DockTo(blueDockable, nil, unison.BottomSide)
-	unison.Ancestor[*unison.DockContainer](blueDockable).Stack(NewDockablePanel(objects.NameBodyKind.HexDump(), "", unison.Pink), -1)
-	unison.Ancestor[*unison.DockContainer](blueDockable).Stack(NewDockablePanel(objects.NameBodyKind.Steam(), "", unison.Pink), -1)
-	unison.Ancestor[*unison.DockContainer](blueDockable).Stack(NewDockablePanel(objects.NameBodyKind.Head(), "", unison.Pink), -1)
-	unison.Ancestor[*unison.DockContainer](blueDockable).Stack(NewDockablePanel(objects.NameBodyKind.Pb2(), "", unison.Pink), -1)
-	unison.Ancestor[*unison.DockContainer](blueDockable).Stack(NewDockablePanel(objects.NameBodyKind.Pb3(), "", unison.Pink), -1)
-	unison.Ancestor[*unison.DockContainer](blueDockable).Stack(NewDockablePanel(objects.NameBodyKind.Tdf(), "", unison.Pink), -1)
-	unison.Ancestor[*unison.DockContainer](blueDockable).Stack(NewDockablePanel(objects.NameBodyKind.Taf(), "", unison.Pink), -1)
-	unison.Ancestor[*unison.DockContainer](blueDockable).Stack(NewDockablePanel(objects.NameBodyKind.Acc(), "", unison.Pink), -1)
-	unison.Ancestor[*unison.DockContainer](blueDockable).Stack(NewDockablePanel(objects.NameBodyKind.Text(), "", unison.Pink), -1)
-	unison.Ancestor[*unison.DockContainer](blueDockable).Stack(NewDockablePanel(objects.NameBodyKind.Json(), "", unison.Pink), -1)
-	unison.Ancestor[*unison.DockContainer](blueDockable).Stack(NewDockablePanel(objects.NameBodyKind.Html(), "", unison.Pink), -1)
-	unison.Ancestor[*unison.DockContainer](blueDockable).Stack(NewDockablePanel(objects.NameBodyKind.Javascript(), "", unison.Pink), -1)
-	unison.Ancestor[*unison.DockContainer](blueDockable).Stack(NewDockablePanel(objects.NameBodyKind.Websocket(), "", unison.Pink), -1)
-	unison.Ancestor[*unison.DockContainer](blueDockable).Stack(NewDockablePanel(objects.NameBodyKind.Msgpack(), "", unison.Pink), -1)
-	unison.Ancestor[*unison.DockContainer](blueDockable).Stack(NewDockablePanel(objects.NameBodyKind.Gzip(), "", unison.Pink), -1)
-	unison.Ancestor[*unison.DockContainer](blueDockable).Stack(NewDockablePanel(objects.NameBodyKind.Notes(), "", unison.Pink), -1)
-	unison.Ancestor[*unison.DockContainer](blueDockable).Stack(NewDockablePanel(objects.NameBodyKind.GitProxy(), "", unison.Pink), -1)
+	unison.Ancestor[*unison.DockContainer](blueDockable).Stack(NewDockablePanel(packets.NameBodyKind.HexDump(), "", unison.Pink), -1)
+	unison.Ancestor[*unison.DockContainer](blueDockable).Stack(NewDockablePanel(packets.NameBodyKind.Steam(), "", unison.Pink), -1)
+	unison.Ancestor[*unison.DockContainer](blueDockable).Stack(NewDockablePanel(packets.NameBodyKind.ProtoBuf(), "", unison.Pink), -1)
+	unison.Ancestor[*unison.DockContainer](blueDockable).Stack(NewDockablePanel(packets.NameBodyKind.Tdf(), "", unison.Pink), -1)
+	unison.Ancestor[*unison.DockContainer](blueDockable).Stack(NewDockablePanel(packets.NameBodyKind.Taf(), "", unison.Pink), -1)
+	unison.Ancestor[*unison.DockContainer](blueDockable).Stack(NewDockablePanel(packets.NameBodyKind.Acc(), "", unison.Pink), -1)
+	unison.Ancestor[*unison.DockContainer](blueDockable).Stack(NewDockablePanel(packets.NameBodyKind.Websocket(), "", unison.Pink), -1)
+	unison.Ancestor[*unison.DockContainer](blueDockable).Stack(NewDockablePanel(packets.NameBodyKind.Msgpack(), "", unison.Pink), -1)
+	unison.Ancestor[*unison.DockContainer](blueDockable).Stack(NewDockablePanel(packets.NameBodyKind.Notes(), "", unison.Pink), -1)
+	unison.Ancestor[*unison.DockContainer](blueDockable).Stack(NewDockablePanel(packets.NameBodyKind.UnitTest(), "", unison.Pink), -1)
+	unison.Ancestor[*unison.DockContainer](blueDockable).Stack(NewDockablePanel(packets.NameBodyKind.GitProxy(), "", unison.Pink), -1)
 
 	dock.SetLayoutData(&unison.FlexLayoutData{
 		HSpan:  1,
@@ -445,13 +427,8 @@ func CanvasObject_(where unison.Point) (ok bool) {
 	}
 	w.SetTitleIcons([]*unison.Image{image})
 	o := &object{
-		Packet: objects.Packet{
-			Row:    objects.Row{},
-			Expand: objects.Expand{},
-			Req:    objects.Body{},
-			Resp:   objects.Body{},
-		},
-		packets: packets{packets: make([]objects.Packet, 0)},
+		Object:  packets.Object{},
+		packets: nil,
 		table:   unison.NewTable[*object](&unison.SimpleTableModel[*object]{}),
 		parent:  nil,
 		id:      uuid.UUID{},
