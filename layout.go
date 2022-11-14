@@ -60,7 +60,7 @@ func CanvasObject(where unison.Point) (ok bool) {
 	content := w.Content()
 	content.SetLayout(&unison.FlexLayout{Columns: 1})
 	content.AddChild(createToolBar())
-	content.AddChild(CreatTable())
+	content.AddChild(CreatTable()) //todo set high
 	content.AddChild(createFilter())
 	content.AddChild(createBodyView())
 	w.Pack()
@@ -83,21 +83,19 @@ var rows = make([]*demoRow, topLevelRowsToMake)
 func CreatTable() *unison.Panel {
 	panel.SetLayout(&unison.FlexLayout{Columns: 1})
 	panel.SetSizer(func(hint unison.Size) (min, pref, max unison.Size) {
-		return unison.Size{}, unison.Size{}, unison.Size{
-			Width:  0,
-			Height: 10, //todo
-		}
+		pref.Width = 200
+		pref.Height = 100
+		return min, pref, unison.MaxSize(max)
 	})
 
 	table.HierarchyColumnIndex = 1
 
 	o := &object{
-		Object:  packets.Object{},
-		packets: nil,
-		table:   unison.NewTable[*object](&unison.SimpleTableModel[*object]{}),
-		parent:  nil,
-		id:      uuid.UUID{},
-		//id:           uuid.UUID{},
+		Object:       packets.Object{},
+		packets:      nil,
+		table:        unison.NewTable[*object](&unison.SimpleTableModel[*object]{}),
+		parent:       nil,
+		id:           uuid.UUID{},
 		treeIdOrSub:  "",
 		tips:         "",
 		root:         make([]*object, 0),
@@ -114,12 +112,13 @@ func CreatTable() *unison.Panel {
 	}
 	table.ColumnSizes = make([]unison.ColumnSize, len(o.Header())+1)
 	for i := range table.ColumnSizes {
-		table.ColumnSizes[i].Minimum = 90
+		table.ColumnSizes[i].Minimum = 100
 		table.ColumnSizes[i].Maximum = 10000
 	}
-	_, checkColSize, _ := unison.NewCheckBox().Sizes(unison.Size{})
-	table.ColumnSizes[0].Minimum = checkColSize.Width
-	table.ColumnSizes[0].Maximum = checkColSize.Width
+	//_, checkColSize, _ := unison.NewCheckBox().Sizes(unison.Size{})
+	table.ColumnSizes[0].Minimum = 20
+	//table.ColumnSizes[0].Minimum = checkColSize.Width
+	//table.ColumnSizes[0].Maximum = checkColSize.Width
 	//rows = append(rows, &demoRow{
 	//	table: table,
 	//	id:    uuid.New(),
