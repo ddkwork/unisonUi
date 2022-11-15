@@ -4,7 +4,21 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="25326ad3-4455-418d-98ac-719210312991" name="变更" comment="变更" />
+    <list default="true" id="25326ad3-4455-418d-98ac-719210312991" name="变更" comment="变更">
+      <change afterPath="$PROJECT_DIR$/sh/cskia/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/sh/cskia/LICENSE" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/sh/cskia/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/sh/cskia/build - Copy.sh" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/sh/cskia/build.sh" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/sh/cskia/capi/sk_capi.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/sh/cskia/capi/sk_capi.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/sh/mupdf/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/sh/mupdf/LICENSE" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/sh/mupdf/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/sh/mupdf/build - Copy.sh" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/sh/mupdf/build.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -113,8 +127,8 @@
     <recent_temporary>
       <list>
         <item itemvalue="Go Build.go build github.com/ddkwork/unisonUi/gcs" />
-        <item itemvalue="Go Build.go build github.com/ddkwork/unisonUi" />
         <item itemvalue="Go Build.go build github.com/ddkwork/unisonUi/example" />
+        <item itemvalue="Go Build.go build github.com/ddkwork/unisonUi" />
       </list>
     </recent_temporary>
   </component>
