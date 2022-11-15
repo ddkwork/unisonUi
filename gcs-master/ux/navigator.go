@@ -19,9 +19,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	gsettings "github.com/richardwilkes/gcs/v5/model/gurps/settings"
-	"github.com/richardwilkes/gcs/v5/model/library"
-	"github.com/richardwilkes/gcs/v5/model/settings"
+	gsettings "github.com/richardwilkes/gcs/v5/model"
 	"github.com/richardwilkes/gcs/v5/svg"
 	"github.com/richardwilkes/toolbox/desktop"
 	"github.com/richardwilkes/toolbox/i18n"
@@ -60,7 +58,7 @@ type Navigator struct {
 	configLibraryButton       *unison.Button
 	scroll                    *unison.ScrollPanel
 	table                     *unison.Table[*NavigatorNode]
-	tokens                    []*library.MonitorToken
+	tokens                    []*gsettings.MonitorToken
 	searchResult              []*NavigatorNode
 	searchIndex               int
 	needReload                bool
@@ -77,7 +75,7 @@ func newNavigator() *Navigator {
 	n.setupToolBar()
 
 	n.table.ColumnSizes = make([]unison.ColumnSize, 1)
-	globalSettings := settings.Global()
+	globalSettings := gsettings.GlobalSettings()
 	libs := globalSettings.LibrarySet.List()
 	rows := make([]*NavigatorNode, 0, len(libs))
 	n.needReload = true
@@ -86,7 +84,7 @@ func newNavigator() *Navigator {
 		rows = append(rows, NewLibraryNode(n, lib))
 	}
 	n.needReload = false
-	n.table.SetScale(float32(settings.Global().General.NavigatorUIScale) / 100)
+	n.table.SetScale(float32(gsettings.GlobalSettings().General.NavigatorUIScale) / 100)
 	n.table.SetRootRows(rows)
 	n.ApplyDisclosedPaths(globalSettings.LibraryExplorer.OpenRowKeys)
 	n.table.SizeColumnsToFit(true)
@@ -108,7 +106,7 @@ func newNavigator() *Navigator {
 	n.AddChild(n.scroll)
 
 	n.table.DoubleClickCallback = n.handleSelectionDoubleClick
-	library.NotifyOfLibraryChangeFunc = n.EventuallyReload
+	gsettings.NotifyOfLibraryChangeFunc = n.EventuallyReload
 	n.table.MouseDownCallback = n.mouseDown
 	n.table.SelectionChangedCallback = n.selectionChanged
 	n.table.KeyDownCallback = n.tableKeyDown
@@ -153,8 +151,8 @@ func (n *Navigator) setupToolBar() {
 	first := unison.NewPanel()
 	first.AddChild(NewDefaultInfoPop())
 	first.AddChild(NewScaleField(gsettings.InitialUIScaleMin, gsettings.InitialUIScaleMax,
-		func() int { return 100 }, func() int { return settings.Global().General.NavigatorUIScale },
-		func(scale int) { settings.Global().General.NavigatorUIScale = scale }, n.scroll, nil, false))
+		func() int { return 100 }, func() int { return gsettings.GlobalSettings().General.NavigatorUIScale },
+		func(scale int) { gsettings.GlobalSettings().General.NavigatorUIScale = scale }, n.scroll, nil, false))
 	first.AddChild(n.hierarchyButton)
 	first.AddChild(NewToolbarSeparator())
 	first.AddChild(addLibraryButton)
@@ -234,7 +232,7 @@ func (n *Navigator) InitialFocus() {
 }
 
 func (n *Navigator) addLibrary() {
-	ShowLibrarySettings(&library.Library{})
+	ShowLibrarySettings(&gsettings.Library{})
 }
 
 func (n *Navigator) deleteSelection() {
@@ -273,7 +271,7 @@ func (n *Navigator) deleteSelection() {
 			header := txt.Wrap("", fmt.Sprintf(i18n.Text("Are you sure you want to remove %s?"), title), 100)
 			if unison.QuestionDialog(header,
 				i18n.Text("Note: This action will NOT remove any files from disk.")) == unison.ModalResponseOK {
-				libs := settings.Global().LibrarySet
+				libs := gsettings.GlobalSettings().LibrarySet
 				for _, row := range selection {
 					delete(libs, row.library.Key())
 					row.library.StopAllWatches()
@@ -506,7 +504,7 @@ func (n *Navigator) mouseDown(where unison.Point, button, clickCount int, mod un
 			id := 1
 			if len(sel) == 1 && sel[0].nodeType == fileNode {
 				p := sel[0].Path()
-				if filepath.Ext(p) == library.TemplatesExt && CanApplyTemplate() {
+				if filepath.Ext(p) == gsettings.TemplatesExt && CanApplyTemplate() {
 					cm.InsertItem(-1, newApplyTemplateMenuItem(f, &id, p))
 					cm.InsertSeparator(-1, true)
 				}
@@ -583,7 +581,7 @@ func newShowNodeOnDiskMenuItem(f unison.MenuFactory, id *int, sel []*NavigatorNo
 		})
 }
 
-func (n *Navigator) watchCallback(_ *library.Library, _ string, _ notify.Event) {
+func (n *Navigator) watchCallback(_ *gsettings.Library, _ string, _ notify.Event) {
 	n.EventuallyReload()
 }
 
@@ -604,7 +602,7 @@ func (n *Navigator) Reload() {
 	n.tokens = nil
 	disclosed := n.DisclosedPaths()
 	selection := n.SelectedPaths()
-	libs := settings.Global().LibrarySet.List()
+	libs := gsettings.GlobalSettings().LibrarySet.List()
 	rows := make([]*NavigatorNode, 0, len(libs))
 	for _, lib := range libs {
 		n.tokens = append(n.tokens, lib.Watch(n.watchCallback, true))
@@ -885,7 +883,7 @@ func DisplayNewDockable(wnd *unison.Window, dockable unison.Dockable) {
 		}
 	}()
 	if fbd, ok := dockable.(FileBackedDockable); ok {
-		fi := library.FileInfoFor(fbd.BackingFilePath())
+		fi := gsettings.FileInfoFor(fbd.BackingFilePath())
 		if dc := ws.CurrentlyFocusedDockContainer(); dc != nil && DockContainerHoldsExtension(dc, fi.GroupWith...) {
 			dc.Stack(dockable, -1)
 			return
@@ -916,7 +914,7 @@ func OpenFile(wnd *unison.Window, filePath string) (dockable unison.Dockable, wa
 		dc.AcquireFocus()
 		return d, true
 	}
-	fi := library.FileInfoFor(filePath)
+	fi := gsettings.FileInfoFor(filePath)
 	if fi.IsSpecial {
 		return nil, false
 	}
@@ -925,7 +923,7 @@ func OpenFile(wnd *unison.Window, filePath string) (dockable unison.Dockable, wa
 		unison.ErrorDialogWithError(i18n.Text("Unable to open file"), err)
 		return nil, false
 	}
-	settings.Global().AddRecentFile(filePath)
+	gsettings.GlobalSettings().AddRecentFile(filePath)
 	DisplayNewDockable(wnd, d)
 	return d, false
 }

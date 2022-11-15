@@ -13,20 +13,19 @@ package ux
 
 import (
 	"github.com/google/uuid"
-	"github.com/richardwilkes/gcs/v5/model/gurps"
-	"github.com/richardwilkes/gcs/v5/model/theme"
+	"github.com/richardwilkes/gcs/v5/model"
 	"github.com/richardwilkes/unison"
 )
 
 type traitModifiersPanel struct {
 	unison.Panel
-	entity    *gurps.Entity
-	modifiers *[]*gurps.TraitModifier
-	provider  TableProvider[*gurps.TraitModifier]
-	table     *unison.Table[*Node[*gurps.TraitModifier]]
+	entity    *model.Entity
+	modifiers *[]*model.TraitModifier
+	provider  TableProvider[*model.TraitModifier]
+	table     *unison.Table[*Node[*model.TraitModifier]]
 }
 
-func newTraitModifiersPanel(entity *gurps.Entity, modifiers *[]*gurps.TraitModifier) *traitModifiersPanel {
+func newTraitModifiersPanel(entity *model.Entity, modifiers *[]*model.TraitModifier) *traitModifiersPanel {
 	p := &traitModifiersPanel{
 		entity:    entity,
 		modifiers: modifiers,
@@ -38,7 +37,7 @@ func newTraitModifiersPanel(entity *gurps.Entity, modifiers *[]*gurps.TraitModif
 		HAlign: unison.FillAlignment,
 		HGrab:  true,
 	})
-	p.SetBorder(unison.NewLineBorder(theme.HeaderColor, 0, unison.NewUniformInsets(1), false))
+	p.SetBorder(unison.NewLineBorder(model.HeaderColor, 0, unison.NewUniformInsets(1), false))
 	p.DrawCallback = func(gc *unison.Canvas, rect unison.Rect) {
 		gc.DrawRect(rect, unison.ContentColor.Paint(gc, rect, unison.Fill))
 	}
@@ -48,15 +47,15 @@ func newTraitModifiersPanel(entity *gurps.Entity, modifiers *[]*gurps.TraitModif
 	return p
 }
 
-func (p *traitModifiersPanel) Entity() *gurps.Entity {
+func (p *traitModifiersPanel) Entity() *model.Entity {
 	return p.entity
 }
 
-func (p *traitModifiersPanel) TraitModifierList() []*gurps.TraitModifier {
+func (p *traitModifiersPanel) TraitModifierList() []*model.TraitModifier {
 	return *p.modifiers
 }
 
-func (p *traitModifiersPanel) SetTraitModifierList(list []*gurps.TraitModifier) {
+func (p *traitModifiersPanel) SetTraitModifierList(list []*model.TraitModifier) {
 	*p.modifiers = list
 	sel := p.table.CopySelectionMap()
 	p.table.SyncToModel()

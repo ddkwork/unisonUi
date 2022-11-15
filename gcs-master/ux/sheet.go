@@ -19,12 +19,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/richardwilkes/gcs/v5/model/gurps"
-	"github.com/richardwilkes/gcs/v5/model/gurps/gid"
-	gsettings "github.com/richardwilkes/gcs/v5/model/gurps/settings"
-	"github.com/richardwilkes/gcs/v5/model/library"
-	"github.com/richardwilkes/gcs/v5/model/settings"
-	"github.com/richardwilkes/gcs/v5/model/theme"
+	"github.com/richardwilkes/gcs/v5/model"
 	"github.com/richardwilkes/gcs/v5/svg"
 	"github.com/richardwilkes/toolbox"
 	"github.com/richardwilkes/toolbox/i18n"
@@ -44,11 +39,11 @@ var (
 	_        Rebuildable                = &Sheet{}
 	_        unison.TabCloser           = &Sheet{}
 	dropKeys                            = []string{
-		gid.Equipment,
-		gid.Skill,
-		gid.Spell,
-		gid.Trait,
-		gid.Note,
+		equipmentDragKey,
+		model.SkillID,
+		model.SpellID,
+		traitDragKey,
+		noteDragKey,
 	}
 )
 
@@ -64,20 +59,20 @@ type Sheet struct {
 	undoMgr              *unison.UndoManager
 	toolbar              *unison.Panel
 	scroll               *unison.ScrollPanel
-	entity               *gurps.Entity
+	entity               *model.Entity
 	crc                  uint64
 	content              *unison.Panel
 	modifiedFunc         func()
-	Reactions            *PageList[*gurps.ConditionalModifier]
-	ConditionalModifiers *PageList[*gurps.ConditionalModifier]
-	MeleeWeapons         *PageList[*gurps.Weapon]
-	RangedWeapons        *PageList[*gurps.Weapon]
-	Traits               *PageList[*gurps.Trait]
-	Skills               *PageList[*gurps.Skill]
-	Spells               *PageList[*gurps.Spell]
-	CarriedEquipment     *PageList[*gurps.Equipment]
-	OtherEquipment       *PageList[*gurps.Equipment]
-	Notes                *PageList[*gurps.Note]
+	Reactions            *PageList[*model.ConditionalModifier]
+	ConditionalModifiers *PageList[*model.ConditionalModifier]
+	MeleeWeapons         *PageList[*model.Weapon]
+	RangedWeapons        *PageList[*model.Weapon]
+	Traits               *PageList[*model.Trait]
+	Skills               *PageList[*model.Skill]
+	Spells               *PageList[*model.Spell]
+	CarriedEquipment     *PageList[*model.Equipment]
+	OtherEquipment       *PageList[*model.Equipment]
+	Notes                *PageList[*model.Note]
 	dragReroutePanel     *unison.Panel
 	scale                int
 	awaitingUpdate       bool
@@ -113,7 +108,7 @@ func OpenSheets(exclude *Sheet) []*Sheet {
 
 // NewSheetFromFile loads a GURPS character sheet file and creates a new unison.Dockable for it.
 func NewSheetFromFile(filePath string) (unison.Dockable, error) {
-	entity, err := gurps.NewEntityFromFile(os.DirFS(filepath.Dir(filePath)), filepath.Base(filePath))
+	entity, err := model.NewEntityFromFile(os.DirFS(filepath.Dir(filePath)), filepath.Base(filePath))
 	if err != nil {
 		return nil, err
 	}
@@ -123,14 +118,14 @@ func NewSheetFromFile(filePath string) (unison.Dockable, error) {
 }
 
 // NewSheet creates a new unison.Dockable for GURPS character sheet files.
-func NewSheet(filePath string, entity *gurps.Entity) *Sheet {
+func NewSheet(filePath string, entity *model.Entity) *Sheet {
 	s := &Sheet{
 		path:              filePath,
 		undoMgr:           unison.NewUndoManager(200, func(err error) { jot.Error(err) }),
 		scroll:            unison.NewScrollPanel(),
 		entity:            entity,
 		crc:               entity.CRC64(),
-		scale:             settings.Global().General.InitialSheetUIScale,
+		scale:             model.GlobalSettings().General.InitialSheetUIScale,
 		content:           unison.NewPanel(),
 		needsSaveAsPrompt: true,
 	}
@@ -196,7 +191,7 @@ func NewSheet(filePath string, entity *gurps.Entity) *Sheet {
 		VGrab:  true,
 	})
 	s.scroll.DrawCallback = func(gc *unison.Canvas, rect unison.Rect) {
-		gc.DrawRect(rect, theme.PageVoidColor.Paint(gc, rect, unison.Fill))
+		gc.DrawRect(rect, model.PageVoidColor.Paint(gc, rect, unison.Fill))
 	}
 
 	sheetSettingsButton := unison.NewSVGButton(svg.Settings)
@@ -219,8 +214,8 @@ func NewSheet(filePath string, entity *gurps.Entity) *Sheet {
 		HGrab:  true,
 	})
 	s.toolbar.AddChild(NewDefaultInfoPop())
-	s.toolbar.AddChild(NewScaleField(gsettings.InitialUIScaleMin, gsettings.InitialUIScaleMax,
-		func() int { return settings.Global().General.InitialSheetUIScale }, func() int { return s.scale },
+	s.toolbar.AddChild(NewScaleField(model.InitialUIScaleMin, model.InitialUIScaleMax,
+		func() int { return model.GlobalSettings().General.InitialSheetUIScale }, func() int { return s.scale },
 		func(scale int) { s.scale = scale }, s.scroll, nil, false))
 	s.toolbar.AddChild(sheetSettingsButton)
 	s.toolbar.AddChild(attributesButton)
@@ -266,10 +261,10 @@ func NewSheet(filePath string, entity *gurps.Entity) *Sheet {
 		s.OtherEquipment)
 	s.installNewItemCmdHandlers(NewNoteItemID, NewNoteContainerItemID, s.Notes)
 	s.InstallCmdHandlers(AddNaturalAttacksItemID, unison.AlwaysEnabled, func(_ any) {
-		InsertItems[*gurps.Trait](s, s.Traits.Table, s.entity.TraitList, s.entity.SetTraitList,
-			func(_ *unison.Table[*Node[*gurps.Trait]]) []*Node[*gurps.Trait] {
+		InsertItems[*model.Trait](s, s.Traits.Table, s.entity.TraitList, s.entity.SetTraitList,
+			func(_ *unison.Table[*Node[*model.Trait]]) []*Node[*model.Trait] {
 				return s.Traits.provider.RootRows()
-			}, gurps.NewNaturalAttacks(s.entity, nil))
+			}, model.NewNaturalAttacks(s.entity, nil))
 	})
 	s.InstallCmdHandlers(SwapDefaultsItemID, s.canSwapDefaults, s.swapDefaults)
 	s.InstallCmdHandlers(ExportAsPDFItemID, unison.AlwaysEnabled, func(_ any) { s.exportToPDF() })
@@ -284,15 +279,15 @@ func NewSheet(filePath string, entity *gurps.Entity) *Sheet {
 func (s *Sheet) keyToPanel(key string) *unison.Panel {
 	var p unison.Paneler
 	switch key {
-	case gid.Equipment:
+	case equipmentDragKey:
 		p = s.CarriedEquipment.Table
-	case gid.Skill:
+	case model.SkillID:
 		p = s.Skills.Table
-	case gid.Spell:
+	case model.SpellID:
 		p = s.Spells.Table
-	case gid.Trait:
+	case traitDragKey:
 		p = s.Traits.Table
-	case gid.Note:
+	case noteDragKey:
 		p = s.Notes.Table
 	default:
 		return nil
@@ -317,7 +312,7 @@ func (s *Sheet) DockableKind() string {
 }
 
 // Entity returns the entity this is displaying information for.
-func (s *Sheet) Entity() *gurps.Entity {
+func (s *Sheet) Entity() *model.Entity {
 	return s.entity
 }
 
@@ -329,7 +324,7 @@ func (s *Sheet) UndoManager() *unison.UndoManager {
 // TitleIcon implements workspace.FileBackedDockable
 func (s *Sheet) TitleIcon(suggestedSize unison.Size) unison.Drawable {
 	return &unison.DrawableSVG{
-		SVG:  library.FileInfoFor(s.path).SVG,
+		SVG:  model.FileInfoFor(s.path).SVG,
 		Size: suggestedSize,
 	}
 }
@@ -423,7 +418,7 @@ func (s *Sheet) AttemptClose() bool {
 func (s *Sheet) save(forceSaveAs bool) bool {
 	success := false
 	if forceSaveAs || s.needsSaveAsPrompt {
-		success = SaveDockableAs(s, library.SheetExt, s.entity.Save, func(path string) {
+		success = SaveDockableAs(s, model.SheetExt, s.entity.Save, func(path string) {
 			s.crc = s.entity.CRC64()
 			s.path = path
 		})
@@ -553,70 +548,70 @@ func (s *Sheet) createLists() {
 		})
 		for _, c := range col {
 			switch c {
-			case gurps.BlockLayoutReactionsKey:
+			case model.BlockLayoutReactionsKey:
 				if s.Reactions == nil {
 					s.Reactions = NewReactionsPageList(s.entity)
 				} else {
 					s.Reactions.Sync()
 				}
 				rowPanel.AddChild(s.Reactions)
-			case gurps.BlockLayoutConditionalModifiersKey:
+			case model.BlockLayoutConditionalModifiersKey:
 				if s.ConditionalModifiers == nil {
 					s.ConditionalModifiers = NewConditionalModifiersPageList(s.entity)
 				} else {
 					s.ConditionalModifiers.Sync()
 				}
 				rowPanel.AddChild(s.ConditionalModifiers)
-			case gurps.BlockLayoutMeleeKey:
+			case model.BlockLayoutMeleeKey:
 				if s.MeleeWeapons == nil {
 					s.MeleeWeapons = NewMeleeWeaponsPageList(s.entity)
 				} else {
 					s.MeleeWeapons.Sync()
 				}
 				rowPanel.AddChild(s.MeleeWeapons)
-			case gurps.BlockLayoutRangedKey:
+			case model.BlockLayoutRangedKey:
 				if s.RangedWeapons == nil {
 					s.RangedWeapons = NewRangedWeaponsPageList(s.entity)
 				} else {
 					s.RangedWeapons.Sync()
 				}
 				rowPanel.AddChild(s.RangedWeapons)
-			case gurps.BlockLayoutTraitsKey:
+			case model.BlockLayoutTraitsKey:
 				if s.Traits == nil {
 					s.Traits = NewTraitsPageList(s, s.entity)
 				} else {
 					s.Traits.Sync()
 				}
 				rowPanel.AddChild(s.Traits)
-			case gurps.BlockLayoutSkillsKey:
+			case model.BlockLayoutSkillsKey:
 				if s.Skills == nil {
 					s.Skills = NewSkillsPageList(s, s.entity)
 				} else {
 					s.Skills.Sync()
 				}
 				rowPanel.AddChild(s.Skills)
-			case gurps.BlockLayoutSpellsKey:
+			case model.BlockLayoutSpellsKey:
 				if s.Spells == nil {
 					s.Spells = NewSpellsPageList(s, s.entity)
 				} else {
 					s.Spells.Sync()
 				}
 				rowPanel.AddChild(s.Spells)
-			case gurps.BlockLayoutEquipmentKey:
+			case model.BlockLayoutEquipmentKey:
 				if s.CarriedEquipment == nil {
 					s.CarriedEquipment = NewCarriedEquipmentPageList(s, s.entity)
 				} else {
 					s.CarriedEquipment.Sync()
 				}
 				rowPanel.AddChild(s.CarriedEquipment)
-			case gurps.BlockLayoutOtherEquipmentKey:
+			case model.BlockLayoutOtherEquipmentKey:
 				if s.OtherEquipment == nil {
 					s.OtherEquipment = NewOtherEquipmentPageList(s, s.entity)
 				} else {
 					s.OtherEquipment.Sync()
 				}
 				rowPanel.AddChild(s.OtherEquipment)
-			case gurps.BlockLayoutNotesKey:
+			case model.BlockLayoutNotesKey:
 				if s.Notes == nil {
 					s.Notes = NewNotesPageList(s, s.entity)
 				} else {
@@ -634,7 +629,7 @@ func (s *Sheet) canSwapDefaults(_ any) bool {
 	canSwap := false
 	for _, skillNode := range s.Skills.SelectedNodes(true) {
 		skill := skillNode.Data()
-		if skill.Type == gid.Technique {
+		if skill.Type == model.TechniqueID {
 			return false
 		}
 		if !skill.CanSwapDefaultsWith(skill.DefaultSkill()) && skill.BestSwappableSkill() == nil {
@@ -646,12 +641,12 @@ func (s *Sheet) canSwapDefaults(_ any) bool {
 }
 
 func (s *Sheet) swapDefaults(_ any) {
-	undo := &unison.UndoEdit[*TableUndoEditData[*gurps.Skill]]{
+	undo := &unison.UndoEdit[*TableUndoEditData[*model.Skill]]{
 		ID:       unison.NextUndoID(),
 		EditName: i18n.Text("Swap Defaults"),
-		UndoFunc: func(e *unison.UndoEdit[*TableUndoEditData[*gurps.Skill]]) { e.BeforeData.Apply() },
-		RedoFunc: func(e *unison.UndoEdit[*TableUndoEditData[*gurps.Skill]]) { e.AfterData.Apply() },
-		AbsorbFunc: func(e *unison.UndoEdit[*TableUndoEditData[*gurps.Skill]], other unison.Undoable) bool {
+		UndoFunc: func(e *unison.UndoEdit[*TableUndoEditData[*model.Skill]]) { e.BeforeData.Apply() },
+		RedoFunc: func(e *unison.UndoEdit[*TableUndoEditData[*model.Skill]]) { e.AfterData.Apply() },
+		AbsorbFunc: func(e *unison.UndoEdit[*TableUndoEditData[*model.Skill]], other unison.Undoable) bool {
 			return false
 		},
 		BeforeData: NewTableUndoEditData(s.Skills.Table),
@@ -674,7 +669,7 @@ func (s *Sheet) swapDefaults(_ any) {
 }
 
 // SheetSettingsUpdated implements gurps.SheetSettingsResponder.
-func (s *Sheet) SheetSettingsUpdated(entity *gurps.Entity, blockLayout bool) {
+func (s *Sheet) SheetSettingsUpdated(entity *model.Entity, blockLayout bool) {
 	if s.entity == entity {
 		s.MarkModified(nil)
 		s.Rebuild(blockLayout)

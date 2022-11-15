@@ -19,9 +19,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/richardwilkes/gcs/v5/model/gurps/gid"
-	"github.com/richardwilkes/gcs/v5/model/library"
-	"github.com/richardwilkes/gcs/v5/model/settings"
+	"github.com/richardwilkes/gcs/v5/model"
 	"github.com/richardwilkes/gcs/v5/svg"
 	"github.com/richardwilkes/toolbox/i18n"
 	xfs "github.com/richardwilkes/toolbox/xio/fs"
@@ -30,7 +28,7 @@ import (
 
 type librarySettingsDockable struct {
 	SettingsDockable
-	library       *library.Library
+	library       *model.Library
 	toolbar       *unison.Panel
 	applyButton   *unison.Button
 	cancelButton  *unison.Button
@@ -47,7 +45,7 @@ type librarySettingsDockable struct {
 }
 
 // ShowLibrarySettings the Library Settings view for a specific library.
-func ShowLibrarySettings(lib *library.Library) {
+func ShowLibrarySettings(lib *model.Library) {
 	ws, dc, found := Activate(func(d unison.Dockable) bool {
 		if settingsDockable, ok := d.(*librarySettingsDockable); ok && settingsDockable.library == lib {
 			return true
@@ -177,12 +175,12 @@ func (d *librarySettingsDockable) initContent(content *unison.Panel) {
 	content.AddChild(info)
 	content.AddChild(unison.NewPanel())
 	info = unison.NewLabel()
-	info.Text = fmt.Sprintf(i18n.Text(`in the form "v%d.x.y" through "v%d.x.y", where x and y can be any numeric value.`), gid.MinimumLibraryVersion, gid.CurrentDataVersion)
+	info.Text = fmt.Sprintf(i18n.Text(`in the form "v%d.x.y" through "v%d.x.y", where x and y can be any numeric value.`), model.MinimumLibraryVersion, model.CurrentDataVersion)
 	content.AddChild(info)
 }
 
 func (d *librarySettingsDockable) checkForSpecial() bool {
-	lib := &library.Library{
+	lib := &model.Library{
 		GitHubAccountName: d.github,
 		RepoName:          d.repo,
 	}
@@ -198,7 +196,7 @@ func (d *librarySettingsDockable) choosePath() {
 	if xfs.IsDir(d.path) {
 		dlg.SetInitialDirectory(d.path)
 	} else {
-		dlg.SetInitialDirectory(settings.Global().LastDir(settings.DefaultLastDirKey))
+		dlg.SetInitialDirectory(model.GlobalSettings().LastDir(model.DefaultLastDirKey))
 	}
 	if dlg.RunModal() {
 		p, err := filepath.Abs(dlg.Path())
@@ -227,7 +225,7 @@ func (d *librarySettingsDockable) updateToolbar() {
 func (d *librarySettingsDockable) apply() {
 	wnd := d.Window()
 	wnd.FocusNext() // Intentionally move the focus to ensure any pending edits are flushed
-	libs := settings.Global().LibrarySet
+	libs := model.GlobalSettings().LibrarySet
 	delete(libs, d.library.Key())
 	d.library.Title = d.name
 	d.library.GitHubAccountName = d.github
@@ -240,7 +238,7 @@ func (d *librarySettingsDockable) apply() {
 	go checkForLibraryUpgrade(d.library)
 }
 
-func checkForLibraryUpgrade(lib *library.Library) {
+func checkForLibraryUpgrade(lib *model.Library) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute*5)
 	defer cancel()
 	lib.CheckForAvailableUpgrade(ctx, &http.Client{})

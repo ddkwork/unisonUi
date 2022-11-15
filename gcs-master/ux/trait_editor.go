@@ -12,22 +12,19 @@
 package ux
 
 import (
+	"github.com/richardwilkes/gcs/v5/model"
 	"github.com/richardwilkes/gcs/v5/model/fxp"
-	"github.com/richardwilkes/gcs/v5/model/gurps"
-	"github.com/richardwilkes/gcs/v5/model/gurps/ancestry"
-	"github.com/richardwilkes/gcs/v5/model/gurps/trait"
-	"github.com/richardwilkes/gcs/v5/model/gurps/weapon"
 	"github.com/richardwilkes/gcs/v5/svg"
 	"github.com/richardwilkes/toolbox/i18n"
 	"github.com/richardwilkes/unison"
 )
 
 // EditTrait displays the editor for a trait.
-func EditTrait(owner Rebuildable, t *gurps.Trait) {
-	displayEditor[*gurps.Trait, *gurps.TraitEditData](owner, t, svg.GCSTraits, initTraitEditor)
+func EditTrait(owner Rebuildable, t *model.Trait) {
+	displayEditor[*model.Trait, *model.TraitEditData](owner, t, svg.GCSTraits, initTraitEditor)
 }
 
-func initTraitEditor(e *editor[*gurps.Trait, *gurps.TraitEditData], content *unison.Panel) func() {
+func initTraitEditor(e *editor[*model.Trait, *model.TraitEditData], content *unison.Panel) func() {
 	addNameLabelAndField(content, &e.editorData.Name)
 	addNotesLabelAndField(content, &e.editorData.LocalNotes)
 	addVTTNotesLabelAndField(content, &e.editorData.VTTNotes)
@@ -39,7 +36,7 @@ func initTraitEditor(e *editor[*gurps.Trait, *gurps.TraitEditData], content *uni
 	if !e.target.Container() {
 		wrapper := addFlowWrapper(content, i18n.Text("Point Cost"), 2)
 		costField := NewNonEditableField(func(field *NonEditableField) {
-			field.Text = gurps.AdjustedPoints(e.target.Entity, e.editorData.CanLevel, e.editorData.BasePoints,
+			field.Text = model.AdjustedPoints(e.target.Entity, e.editorData.CanLevel, e.editorData.BasePoints,
 				e.editorData.Levels, e.editorData.PointsPerLevel, e.editorData.CR, e.editorData.Modifiers,
 				e.editorData.RoundCostDown).String()
 			field.MarkForLayoutAndRedraw()
@@ -74,24 +71,24 @@ func initTraitEditor(e *editor[*gurps.Trait, *gurps.TraitEditData], content *uni
 		adjustFieldBlank(perLevelField, !e.editorData.CanLevel)
 		adjustFieldBlank(levelField, !e.editorData.CanLevel)
 	}
-	addLabelAndPopup(content, i18n.Text("Self-Control Roll"), "", trait.AllSelfControlRolls, &e.editorData.CR)
+	addLabelAndPopup(content, i18n.Text("Self-Control Roll"), "", model.AllSelfControlRolls, &e.editorData.CR)
 	crAdjPopup := addLabelAndPopup(content, i18n.Text("CR Adjustment"), i18n.Text("Self-Control Roll Adjustment"),
-		gurps.AllSelfControlRollAdj, &e.editorData.CRAdj)
-	if e.editorData.CR == trait.None {
+		model.AllSelfControlRollAdj, &e.editorData.CRAdj)
+	if e.editorData.CR == model.NoCR {
 		crAdjPopup.SetEnabled(false)
 	}
 	var ancestryPopup *unison.PopupMenu[string]
 	if e.target.Container() {
-		addLabelAndPopup(content, i18n.Text("Container Type"), "", trait.AllContainerType,
+		addLabelAndPopup(content, i18n.Text("Container WeaponType"), "", model.AllContainerType,
 			&e.editorData.ContainerType)
 		var choices []string
-		for _, lib := range ancestry.AvailableAncestries(gurps.SettingsProvider.Libraries()) {
+		for _, lib := range model.AvailableAncestries(model.GlobalSettings().Libraries()) {
 			for _, one := range lib.List {
 				choices = append(choices, one.Name)
 			}
 		}
 		ancestryPopup = addLabelAndPopup(content, i18n.Text("Ancestry"), "", choices, &e.editorData.Ancestry)
-		adjustPopupBlank(ancestryPopup, e.editorData.ContainerType != trait.Race)
+		adjustPopupBlank(ancestryPopup, e.editorData.ContainerType != model.RaceContainerType)
 		addTemplateChoices(content, nil, "", &e.editorData.TemplatePicker)
 	}
 	addPageRefLabelAndField(content, &e.editorData.PageRef)
@@ -102,7 +99,7 @@ func initTraitEditor(e *editor[*gurps.Trait, *gurps.TraitEditData], content *uni
 		content.AddChild(newPrereqPanel(e.target.Entity, &e.editorData.Prereq))
 		content.AddChild(newFeaturesPanel(e.target.Entity, e.target, &e.editorData.Features))
 		content.AddChild(modifiersPanel)
-		for _, wt := range weapon.AllType {
+		for _, wt := range model.AllWeaponType {
 			content.AddChild(newWeaponsPanel(e, e.target, wt, &e.editorData.Weapons))
 		}
 		content.AddChild(newStudyPanel(e.target.Entity, &e.editorData.Study))
@@ -118,18 +115,18 @@ func initTraitEditor(e *editor[*gurps.Trait, *gurps.TraitEditData], content *uni
 		if levelField != nil {
 			adjustFieldBlank(levelField, !e.editorData.CanLevel)
 		}
-		if e.editorData.CR == trait.None {
+		if e.editorData.CR == model.NoCR {
 			crAdjPopup.SetEnabled(false)
-			crAdjPopup.Select(gurps.NoCRAdj)
+			crAdjPopup.Select(model.NoCRAdj)
 		} else {
 			crAdjPopup.SetEnabled(true)
 		}
 		if ancestryPopup != nil {
-			if e.editorData.ContainerType == trait.Race {
+			if e.editorData.ContainerType == model.RaceContainerType {
 				if !ancestryPopup.Enabled() {
 					adjustPopupBlank(ancestryPopup, false)
 					if ancestryPopup.IndexOfItem(e.editorData.Ancestry) == -1 {
-						e.editorData.Ancestry = ancestry.Default
+						e.editorData.Ancestry = model.DefaultAncestry
 					}
 					ancestryPopup.Select(e.editorData.Ancestry)
 				}

@@ -15,10 +15,8 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
+	"github.com/richardwilkes/gcs/v5/model"
 	"github.com/richardwilkes/gcs/v5/model/fxp"
-	"github.com/richardwilkes/gcs/v5/model/gurps"
-	"github.com/richardwilkes/gcs/v5/model/settings"
-	"github.com/richardwilkes/gcs/v5/model/theme"
 	"github.com/richardwilkes/toolbox/i18n"
 	"github.com/richardwilkes/toolbox/txt"
 	"github.com/richardwilkes/toolbox/xmath"
@@ -38,9 +36,9 @@ const (
 )
 
 // TableProvider defines the methods a table provider must contain.
-type TableProvider[T gurps.NodeTypes] interface {
+type TableProvider[T model.NodeTypes] interface {
 	unison.TableModel[*Node[T]]
-	gurps.EntityProvider
+	model.EntityProvider
 	SetTable(table *unison.Table[*Node[T]])
 	RootData() []T
 	SetRootData(data []T)
@@ -65,7 +63,7 @@ type TableProvider[T gurps.NodeTypes] interface {
 
 // NewNodeTable creates a new node table of the specified type, returning the header and table. Pass nil for 'font' if
 // this should be a standalone top-level table for a dockable. Otherwise, pass in the typical font used for a cell.
-func NewNodeTable[T gurps.NodeTypes](provider TableProvider[T], font unison.Font) (header *unison.TableHeader[*Node[T]], table *unison.Table[*Node[T]]) {
+func NewNodeTable[T model.NodeTypes](provider TableProvider[T], font unison.Font) (header *unison.TableHeader[*Node[T]], table *unison.Table[*Node[T]]) {
 	table = unison.NewTable[*Node[T]](provider)
 	provider.SetTable(table)
 	table.HierarchyColumnIndex = provider.HierarchyColumnIndex()
@@ -80,7 +78,7 @@ func NewNodeTable[T gurps.NodeTypes](provider TableProvider[T], font unison.Font
 		table.Padding.Bottom = 0
 		table.HierarchyIndent = font.LineHeight()
 		table.MinimumRowHeight = font.LineHeight()
-		layoutData.MinSize = unison.Size{Height: 4 + theme.PageFieldPrimaryFont.LineHeight()}
+		layoutData.MinSize = unison.Size{Height: 4 + model.PageFieldPrimaryFont.LineHeight()}
 	}
 	table.SetLayoutData(layoutData)
 
@@ -90,13 +88,13 @@ func NewNodeTable[T gurps.NodeTypes](provider TableProvider[T], font unison.Font
 		_, pref, _ := headers[i].AsPanel().Sizes(unison.Size{})
 		pref.Width += table.Padding.Left + table.Padding.Right
 		table.ColumnSizes[i].AutoMinimum = pref.Width
-		table.ColumnSizes[i].AutoMaximum = xmath.Max(float32(settings.Global().General.MaximumAutoColWidth), pref.Width)
+		table.ColumnSizes[i].AutoMaximum = xmath.Max(float32(model.GlobalSettings().General.MaximumAutoColWidth), pref.Width)
 		table.ColumnSizes[i].Minimum = pref.Width
 		table.ColumnSizes[i].Maximum = 10000
 	}
 	header = unison.NewTableHeader(table, headers...)
 	header.Less = flexibleLess
-	header.BackgroundInk = theme.HeaderColor
+	header.BackgroundInk = model.HeaderColor
 	header.SetBorder(header.HeaderBorder)
 	header.SetLayoutData(&unison.FlexLayoutData{
 		HAlign: unison.FillAlignment,
@@ -163,24 +161,24 @@ func NewNodeTable[T gurps.NodeTypes](provider TableProvider[T], font unison.Font
 
 func isAcceptableTypeForSheetOrTemplate(data any) bool {
 	switch data.(type) {
-	case *gurps.Equipment, *gurps.Note, *gurps.Skill, *gurps.Spell, *gurps.Trait:
+	case *model.Equipment, *model.Note, *model.Skill, *model.Spell, *model.Trait:
 		return true
 	default:
 		return false
 	}
 }
 
-func canCopySelectionToSheet[T gurps.NodeTypes](table *unison.Table[*Node[T]]) bool {
+func canCopySelectionToSheet[T model.NodeTypes](table *unison.Table[*Node[T]]) bool {
 	var t T
 	return table.HasSelection() && len(OpenSheets(unison.Ancestor[*Sheet](table))) > 0 && isAcceptableTypeForSheetOrTemplate(t)
 }
 
-func canCopySelectionToTemplate[T gurps.NodeTypes](table *unison.Table[*Node[T]]) bool {
+func canCopySelectionToTemplate[T model.NodeTypes](table *unison.Table[*Node[T]]) bool {
 	var t T
 	return table.HasSelection() && len(OpenTemplates(unison.Ancestor[*Template](table))) > 0 && isAcceptableTypeForSheetOrTemplate(t)
 }
 
-func copySelectionToSheet[T gurps.NodeTypes](table *unison.Table[*Node[T]]) {
+func copySelectionToSheet[T model.NodeTypes](table *unison.Table[*Node[T]]) {
 	if table.HasSelection() {
 		if sheets := PromptForDestination(OpenSheets(unison.Ancestor[*Sheet](table))); len(sheets) > 0 {
 			sel := table.SelectedRows(true)
@@ -188,27 +186,27 @@ func copySelectionToSheet[T gurps.NodeTypes](table *unison.Table[*Node[T]]) {
 				var targetTable *unison.Table[*Node[T]]
 				var postProcessor func(rows []*Node[T])
 				switch any(sel[0].Data()).(type) {
-				case *gurps.Trait:
+				case *model.Trait:
 					targetTable = convertTable[T](s.Traits.Table)
 					postProcessor = func(rows []*Node[T]) {
 						s.Traits.provider.ProcessDropData(nil, s.Traits.Table)
 					}
-				case *gurps.Skill:
+				case *model.Skill:
 					targetTable = convertTable[T](s.Skills.Table)
 					postProcessor = func(rows []*Node[T]) {
 						s.Skills.provider.ProcessDropData(nil, s.Skills.Table)
 					}
-				case *gurps.Spell:
+				case *model.Spell:
 					targetTable = convertTable[T](s.Spells.Table)
 					postProcessor = func(rows []*Node[T]) {
 						s.Spells.provider.ProcessDropData(nil, s.Spells.Table)
 					}
-				case *gurps.Equipment:
+				case *model.Equipment:
 					targetTable = convertTable[T](s.CarriedEquipment.Table)
 					postProcessor = func(rows []*Node[T]) {
 						s.CarriedEquipment.provider.ProcessDropData(nil, s.CarriedEquipment.Table)
 					}
-				case *gurps.Note:
+				case *model.Note:
 					targetTable = convertTable[T](s.Notes.Table)
 					postProcessor = func(rows []*Node[T]) {
 						s.Notes.provider.ProcessDropData(nil, s.Notes.Table)
@@ -226,21 +224,21 @@ func copySelectionToSheet[T gurps.NodeTypes](table *unison.Table[*Node[T]]) {
 	}
 }
 
-func copySelectionToTemplate[T gurps.NodeTypes](table *unison.Table[*Node[T]]) {
+func copySelectionToTemplate[T model.NodeTypes](table *unison.Table[*Node[T]]) {
 	if table.HasSelection() {
 		if templates := PromptForDestination(OpenTemplates(unison.Ancestor[*Template](table))); len(templates) > 0 {
 			sel := table.SelectedRows(true)
 			for _, t := range templates {
 				switch any(sel[0].Data()).(type) {
-				case *gurps.Trait:
+				case *model.Trait:
 					CopyRowsTo(convertTable[T](t.Traits.Table), sel, nil)
-				case *gurps.Skill:
+				case *model.Skill:
 					CopyRowsTo(convertTable[T](t.Skills.Table), sel, nil)
-				case *gurps.Spell:
+				case *model.Spell:
 					CopyRowsTo(convertTable[T](t.Spells.Table), sel, nil)
-				case *gurps.Equipment:
+				case *model.Equipment:
 					CopyRowsTo(convertTable[T](t.Equipment.Table), sel, nil)
-				case *gurps.Note:
+				case *model.Note:
 					CopyRowsTo(convertTable[T](t.Notes.Table), sel, nil)
 				}
 			}
@@ -248,7 +246,7 @@ func copySelectionToTemplate[T gurps.NodeTypes](table *unison.Table[*Node[T]]) {
 	}
 }
 
-func convertTable[T gurps.NodeTypes](table any) *unison.Table[*Node[T]] {
+func convertTable[T model.NodeTypes](table any) *unison.Table[*Node[T]] {
 	// This is here just to get around limitations in the way Go generics behave
 	if t, ok := table.(*unison.Table[*Node[T]]); ok {
 		return t
@@ -257,7 +255,7 @@ func convertTable[T gurps.NodeTypes](table any) *unison.Table[*Node[T]] {
 }
 
 // InsertCmdContextMenuItem inserts a context menu item for the given command.
-func InsertCmdContextMenuItem[T gurps.NodeTypes](table *unison.Table[*Node[T]], title string, cmdID int, id *int, cm unison.Menu) {
+func InsertCmdContextMenuItem[T model.NodeTypes](table *unison.Table[*Node[T]], title string, cmdID int, id *int, cm unison.Menu) {
 	if table.CanPerformCmd(table, cmdID) {
 		useID := *id
 		*id++
@@ -279,7 +277,7 @@ func flexibleLess(s1, s2 string) bool {
 }
 
 // OpenEditor opens an editor for each selected row in the table.
-func OpenEditor[T gurps.NodeTypes](table *unison.Table[*Node[T]], edit func(item T)) {
+func OpenEditor[T model.NodeTypes](table *unison.Table[*Node[T]], edit func(item T)) {
 	var zero T
 	selection := table.SelectedRows(false)
 	if len(selection) > 4 {
@@ -296,7 +294,7 @@ func OpenEditor[T gurps.NodeTypes](table *unison.Table[*Node[T]], edit func(item
 }
 
 // DeleteSelection removes the selected nodes from the table.
-func DeleteSelection[T gurps.NodeTypes](table *unison.Table[*Node[T]]) {
+func DeleteSelection[T model.NodeTypes](table *unison.Table[*Node[T]]) {
 	if provider, ok := any(table.Model).(TableProvider[T]); ok && !table.IsFiltered() && table.HasSelection() {
 		sel := table.SelectedRows(true)
 		ids := make(map[uuid.UUID]bool, len(sel))
@@ -326,7 +324,7 @@ func DeleteSelection[T gurps.NodeTypes](table *unison.Table[*Node[T]]) {
 		needSet := false
 		topLevelData := provider.RootData()
 		for _, target := range list {
-			parent := gurps.AsNode(target).Parent()
+			parent := model.AsNode(target).Parent()
 			if parent == zero {
 				for i, one := range topLevelData {
 					if one == target {
@@ -336,7 +334,7 @@ func DeleteSelection[T gurps.NodeTypes](table *unison.Table[*Node[T]]) {
 					}
 				}
 			} else {
-				pNode := gurps.AsNode(parent)
+				pNode := model.AsNode(parent)
 				children := pNode.NodeChildren()
 				for i, one := range children {
 					if one == target {
@@ -360,7 +358,7 @@ func DeleteSelection[T gurps.NodeTypes](table *unison.Table[*Node[T]]) {
 }
 
 // DuplicateSelection duplicates the selected nodes in the table.
-func DuplicateSelection[T gurps.NodeTypes](table *unison.Table[*Node[T]]) {
+func DuplicateSelection[T model.NodeTypes](table *unison.Table[*Node[T]]) {
 	if provider, ok := any(table.Model).(TableProvider[T]); ok && !table.IsFiltered() && table.HasSelection() {
 		var undo *unison.UndoEdit[*TableUndoEditData[T]]
 		mgr := unison.UndoManagerFor(table)
@@ -381,10 +379,10 @@ func DuplicateSelection[T gurps.NodeTypes](table *unison.Table[*Node[T]]) {
 		selMap := make(map[uuid.UUID]bool, len(sel))
 		for _, row := range sel {
 			if target := row.Data(); target != zero {
-				tData := gurps.AsNode(target)
+				tData := model.AsNode(target)
 				parent := tData.Parent()
 				clone := tData.Clone(tData.OwningEntity(), parent, false)
-				selMap[gurps.AsNode(clone).UUID()] = true
+				selMap[model.AsNode(clone).UUID()] = true
 				if parent == zero {
 					for i, child := range topLevelData {
 						if child == target {
@@ -394,7 +392,7 @@ func DuplicateSelection[T gurps.NodeTypes](table *unison.Table[*Node[T]]) {
 						}
 					}
 				} else {
-					pNode := gurps.AsNode(parent)
+					pNode := model.AsNode(parent)
 					children := pNode.NodeChildren()
 					for i, child := range children {
 						if child == target {
@@ -421,7 +419,7 @@ func DuplicateSelection[T gurps.NodeTypes](table *unison.Table[*Node[T]]) {
 }
 
 // CopyRowsTo copies the provided rows to the target table.
-func CopyRowsTo[T gurps.NodeTypes](table *unison.Table[*Node[T]], rows []*Node[T], postProcessor func(rows []*Node[T])) {
+func CopyRowsTo[T model.NodeTypes](table *unison.Table[*Node[T]], rows []*Node[T], postProcessor func(rows []*Node[T])) {
 	if table == nil || table.IsFiltered() {
 		return
 	}
@@ -434,7 +432,7 @@ func CopyRowsTo[T gurps.NodeTypes](table *unison.Table[*Node[T]], rows []*Node[T
 	if mgr != nil {
 		undo = &unison.UndoEdit[*TableUndoEditData[T]]{
 			ID:         unison.NextUndoID(),
-			EditName:   fmt.Sprintf(i18n.Text("Insert %s"), gurps.AsNode(rows[0].Data()).Kind()),
+			EditName:   fmt.Sprintf(i18n.Text("Insert %s"), model.AsNode(rows[0].Data()).Kind()),
 			UndoFunc:   func(e *unison.UndoEdit[*TableUndoEditData[T]]) { e.BeforeData.Apply() },
 			RedoFunc:   func(e *unison.UndoEdit[*TableUndoEditData[T]]) { e.AfterData.Apply() },
 			AbsorbFunc: func(e *unison.UndoEdit[*TableUndoEditData[T]], other unison.Undoable) bool { return false },

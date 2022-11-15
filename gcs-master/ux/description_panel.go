@@ -14,10 +14,8 @@ package ux
 import (
 	"strconv"
 
+	"github.com/richardwilkes/gcs/v5/model"
 	"github.com/richardwilkes/gcs/v5/model/fxp"
-	"github.com/richardwilkes/gcs/v5/model/gurps"
-	"github.com/richardwilkes/gcs/v5/model/gurps/measure"
-	"github.com/richardwilkes/gcs/v5/model/settings"
 	"github.com/richardwilkes/toolbox/i18n"
 	"github.com/richardwilkes/unison"
 )
@@ -25,13 +23,13 @@ import (
 // DescriptionPanel holds the contents of the description block on the sheet.
 type DescriptionPanel struct {
 	unison.Panel
-	entity    *gurps.Entity
+	entity    *model.Entity
 	targetMgr *TargetMgr
 	prefix    string
 }
 
 // NewDescriptionPanel creates a new description panel.
-func NewDescriptionPanel(entity *gurps.Entity, targetMgr *TargetMgr) *DescriptionPanel {
+func NewDescriptionPanel(entity *model.Entity, targetMgr *TargetMgr) *DescriptionPanel {
 	d := &DescriptionPanel{
 		entity:    entity,
 		targetMgr: targetMgr,
@@ -110,7 +108,7 @@ func (d *DescriptionPanel) createColumn1() *unison.Panel {
 		func(s string) { d.entity.Profile.Birthday = s })
 	column.AddChild(NewPageLabelWithRandomizer(title,
 		i18n.Text("Randomize the birthday using the current calendar"), func() {
-			global := settings.Global()
+			global := model.GlobalSettings()
 			d.entity.Profile.Birthday = global.General.CalendarRef(global.LibrarySet).RandomBirthday(d.entity.Profile.Birthday)
 			SetTextAndMarkModified(birthdayField.Field, d.entity.Profile.Birthday)
 		}))
@@ -133,8 +131,8 @@ func (d *DescriptionPanel) createColumn2() *unison.Panel {
 
 	title := i18n.Text("Height")
 	heightField := NewHeightPageField(d.targetMgr, d.prefix+"height", title, d.entity,
-		func() measure.Length { return d.entity.Profile.Height },
-		func(v measure.Length) { d.entity.Profile.Height = v }, 0, measure.Length(fxp.Max), true)
+		func() model.Length { return d.entity.Profile.Height },
+		func(v model.Length) { d.entity.Profile.Height = v }, 0, model.Length(fxp.Max), true)
 	column.AddChild(NewPageLabelWithRandomizer(title,
 		i18n.Text("Randomize the height using the current ancestry"), func() {
 			d.entity.Profile.Height = d.entity.Ancestry().RandomHeight(d.entity, d.entity.Profile.Gender, d.entity.Profile.Height)
@@ -145,8 +143,8 @@ func (d *DescriptionPanel) createColumn2() *unison.Panel {
 
 	title = i18n.Text("Weight")
 	weightField := NewWeightPageField(d.targetMgr, d.prefix+"weight", title, d.entity,
-		func() measure.Weight { return d.entity.Profile.Weight },
-		func(v measure.Weight) { d.entity.Profile.Weight = v }, 0, measure.Weight(fxp.Max), true)
+		func() model.Weight { return d.entity.Profile.Weight },
+		func(v model.Weight) { d.entity.Profile.Weight = v }, 0, model.Weight(fxp.Max), true)
 	column.AddChild(NewPageLabelWithRandomizer(title,
 		i18n.Text("Randomize the weight using the current ancestry"), func() {
 			d.entity.Profile.Weight = d.entity.Ancestry().RandomWeight(d.entity, d.entity.Profile.Gender, d.entity.Profile.Weight)
@@ -168,7 +166,7 @@ func (d *DescriptionPanel) createColumn2() *unison.Panel {
 	tlField := NewStringPageField(d.targetMgr, d.prefix+"tl", title,
 		func() string { return d.entity.Profile.TechLevel },
 		func(s string) { d.entity.Profile.TechLevel = s })
-	tlField.Tooltip = unison.NewTooltipWithText(gurps.TechLevelInfo)
+	tlField.Tooltip = unison.NewTooltipWithText(model.TechLevelInfo)
 	column.AddChild(tlField)
 
 	return column

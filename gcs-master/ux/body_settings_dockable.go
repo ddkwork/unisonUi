@@ -15,9 +15,7 @@ import (
 	"fmt"
 	"io/fs"
 
-	"github.com/richardwilkes/gcs/v5/model/gurps"
-	"github.com/richardwilkes/gcs/v5/model/library"
-	"github.com/richardwilkes/gcs/v5/model/settings"
+	"github.com/richardwilkes/gcs/v5/model"
 	"github.com/richardwilkes/gcs/v5/svg"
 	"github.com/richardwilkes/toolbox/i18n"
 	"github.com/richardwilkes/toolbox/log/jot"
@@ -32,14 +30,14 @@ type bodySettingsDockable struct {
 	owner          EntityPanel
 	targetMgr      *TargetMgr
 	undoMgr        *unison.UndoManager
-	body           *gurps.Body
+	body           *model.Body
 	originalCRC    uint64
 	toolbar        *unison.Panel
 	content        *unison.Panel
 	applyButton    *unison.Button
 	cancelButton   *unison.Button
 	dragTarget     *unison.Panel
-	dragTargetBody *gurps.Body
+	dragTargetBody *model.Body
 	dragInsert     int
 	promptForSave  bool
 	inDragOver     bool
@@ -65,13 +63,13 @@ func ShowBodySettings(owner EntityPanel) {
 			d.body = entity.SheetSettings.BodyType.Clone(entity, nil)
 			d.TabTitle = i18n.Text("Body Type: " + owner.Entity().Profile.Name)
 		} else {
-			d.body = settings.Global().Sheet.BodyType.Clone(nil, nil)
+			d.body = model.GlobalSettings().Sheet.BodyType.Clone(nil, nil)
 			d.TabTitle = i18n.Text("Default Body Type")
 		}
 		d.TabIcon = svg.BodyType
 		d.body.ResetTargetKeyPrefixes(d.targetMgr.NextPrefix)
 		d.originalCRC = d.body.CRC64()
-		d.Extensions = []string{library.BodyExt, library.BodyExtAlt}
+		d.Extensions = []string{model.BodyExt, model.BodyExtAlt}
 		d.undoMgr = unison.NewUndoManager(100, func(err error) { jot.Error(err) })
 		d.Loader = d.load
 		d.Saver = d.save
@@ -143,30 +141,30 @@ func (d *bodySettingsDockable) initContent(content *unison.Panel) {
 	content.AddChild(newBodySettingsPanel(d))
 }
 
-func (d *bodySettingsDockable) Entity() *gurps.Entity {
+func (d *bodySettingsDockable) Entity() *model.Entity {
 	if d.owner != nil {
 		return d.owner.Entity()
 	}
 	return nil
 }
 
-func (d *bodySettingsDockable) prepareUndo(title string) *unison.UndoEdit[*gurps.Body] {
-	return &unison.UndoEdit[*gurps.Body]{
+func (d *bodySettingsDockable) prepareUndo(title string) *unison.UndoEdit[*model.Body] {
+	return &unison.UndoEdit[*model.Body]{
 		ID:         unison.NextUndoID(),
 		EditName:   title,
-		UndoFunc:   func(e *unison.UndoEdit[*gurps.Body]) { d.applyBodyType(e.BeforeData) },
-		RedoFunc:   func(e *unison.UndoEdit[*gurps.Body]) { d.applyBodyType(e.AfterData) },
-		AbsorbFunc: func(e *unison.UndoEdit[*gurps.Body], other unison.Undoable) bool { return false },
+		UndoFunc:   func(e *unison.UndoEdit[*model.Body]) { d.applyBodyType(e.BeforeData) },
+		RedoFunc:   func(e *unison.UndoEdit[*model.Body]) { d.applyBodyType(e.AfterData) },
+		AbsorbFunc: func(e *unison.UndoEdit[*model.Body], other unison.Undoable) bool { return false },
 		BeforeData: d.body.Clone(d.Entity(), nil),
 	}
 }
 
-func (d *bodySettingsDockable) finishAndPostUndo(undo *unison.UndoEdit[*gurps.Body]) {
+func (d *bodySettingsDockable) finishAndPostUndo(undo *unison.UndoEdit[*model.Body]) {
 	undo.AfterData = d.body.Clone(d.Entity(), nil)
 	d.UndoManager().Add(undo)
 }
 
-func (d *bodySettingsDockable) applyBodyType(bodyType *gurps.Body) {
+func (d *bodySettingsDockable) applyBodyType(bodyType *model.Body) {
 	d.body = bodyType.Clone(d.Entity(), nil)
 	d.sync()
 }
@@ -174,9 +172,9 @@ func (d *bodySettingsDockable) applyBodyType(bodyType *gurps.Body) {
 func (d *bodySettingsDockable) reset() {
 	undo := d.prepareUndo(i18n.Text("Reset Body Type"))
 	if d.owner != nil {
-		d.body = settings.Global().Sheet.BodyType.Clone(d.Entity(), nil)
+		d.body = model.GlobalSettings().Sheet.BodyType.Clone(d.Entity(), nil)
 	} else {
-		d.body = gurps.FactoryBody()
+		d.body = model.FactoryBody()
 	}
 	d.body.ResetTargetKeyPrefixes(d.targetMgr.NextPrefix)
 	d.finishAndPostUndo(undo)
@@ -198,7 +196,7 @@ func (d *bodySettingsDockable) sync() {
 }
 
 func (d *bodySettingsDockable) load(fileSystem fs.FS, filePath string) error {
-	bodyType, err := gurps.NewBodyFromFile(fileSystem, filePath)
+	bodyType, err := model.NewBodyFromFile(fileSystem, filePath)
 	if err != nil {
 		return err
 	}
@@ -217,7 +215,7 @@ func (d *bodySettingsDockable) save(filePath string) error {
 func (d *bodySettingsDockable) apply() {
 	d.Window().FocusNext() // Intentionally move the focus to ensure any pending edits are flushed
 	if d.owner == nil {
-		settings.Global().Sheet.BodyType = d.body.Clone(nil, nil)
+		model.GlobalSettings().Sheet.BodyType = d.body.Clone(nil, nil)
 		return
 	}
 	entity := d.owner.Entity()
@@ -226,7 +224,7 @@ func (d *bodySettingsDockable) apply() {
 		if ws := WorkspaceFromWindow(wnd); ws != nil {
 			ws.DocumentDock.RootDockLayout().ForEachDockContainer(func(dc *unison.DockContainer) bool {
 				for _, one := range dc.Dockables() {
-					if s, ok := one.(gurps.SheetSettingsResponder); ok {
+					if s, ok := one.(model.SheetSettingsResponder); ok {
 						s.SheetSettingsUpdated(entity, true)
 					}
 				}

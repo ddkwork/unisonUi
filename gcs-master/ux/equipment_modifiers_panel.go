@@ -13,20 +13,19 @@ package ux
 
 import (
 	"github.com/google/uuid"
-	"github.com/richardwilkes/gcs/v5/model/gurps"
-	"github.com/richardwilkes/gcs/v5/model/theme"
+	"github.com/richardwilkes/gcs/v5/model"
 	"github.com/richardwilkes/unison"
 )
 
 type equipmentModifiersPanel struct {
 	unison.Panel
-	entity    *gurps.Entity
-	modifiers *[]*gurps.EquipmentModifier
-	provider  TableProvider[*gurps.EquipmentModifier]
-	table     *unison.Table[*Node[*gurps.EquipmentModifier]]
+	entity    *model.Entity
+	modifiers *[]*model.EquipmentModifier
+	provider  TableProvider[*model.EquipmentModifier]
+	table     *unison.Table[*Node[*model.EquipmentModifier]]
 }
 
-func newEquipmentModifiersPanel(entity *gurps.Entity, modifiers *[]*gurps.EquipmentModifier) *equipmentModifiersPanel {
+func newEquipmentModifiersPanel(entity *model.Entity, modifiers *[]*model.EquipmentModifier) *equipmentModifiersPanel {
 	p := &equipmentModifiersPanel{
 		entity:    entity,
 		modifiers: modifiers,
@@ -38,7 +37,7 @@ func newEquipmentModifiersPanel(entity *gurps.Entity, modifiers *[]*gurps.Equipm
 		HAlign: unison.FillAlignment,
 		HGrab:  true,
 	})
-	p.SetBorder(unison.NewLineBorder(theme.HeaderColor, 0, unison.NewUniformInsets(1), false))
+	p.SetBorder(unison.NewLineBorder(model.HeaderColor, 0, unison.NewUniformInsets(1), false))
 	p.DrawCallback = func(gc *unison.Canvas, rect unison.Rect) {
 		gc.DrawRect(rect, unison.ContentColor.Paint(gc, rect, unison.Fill))
 	}
@@ -48,15 +47,15 @@ func newEquipmentModifiersPanel(entity *gurps.Entity, modifiers *[]*gurps.Equipm
 	return p
 }
 
-func (p *equipmentModifiersPanel) Entity() *gurps.Entity {
+func (p *equipmentModifiersPanel) Entity() *model.Entity {
 	return p.entity
 }
 
-func (p *equipmentModifiersPanel) EquipmentModifierList() []*gurps.EquipmentModifier {
+func (p *equipmentModifiersPanel) EquipmentModifierList() []*model.EquipmentModifier {
 	return *p.modifiers
 }
 
-func (p *equipmentModifiersPanel) SetEquipmentModifierList(list []*gurps.EquipmentModifier) {
+func (p *equipmentModifiersPanel) SetEquipmentModifierList(list []*model.EquipmentModifier) {
 	*p.modifiers = list
 	sel := p.table.CopySelectionMap()
 	p.table.SyncToModel()

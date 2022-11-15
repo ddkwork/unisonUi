@@ -14,27 +14,24 @@ package ux
 import (
 	"strings"
 
+	"github.com/richardwilkes/gcs/v5/model"
 	"github.com/richardwilkes/gcs/v5/model/fxp"
-	"github.com/richardwilkes/gcs/v5/model/gurps"
-	"github.com/richardwilkes/gcs/v5/model/gurps/gid"
-	"github.com/richardwilkes/gcs/v5/model/gurps/skill"
-	"github.com/richardwilkes/gcs/v5/model/gurps/weapon"
 	"github.com/richardwilkes/gcs/v5/svg"
 	"github.com/richardwilkes/toolbox/i18n"
 	"github.com/richardwilkes/unison"
 )
 
 // EditSkill displays the editor for an skill.
-func EditSkill(owner Rebuildable, skill *gurps.Skill) {
-	displayEditor[*gurps.Skill, *gurps.SkillEditData](owner, skill, svg.GCSSkills, initSkillEditor)
+func EditSkill(owner Rebuildable, skill *model.Skill) {
+	displayEditor[*model.Skill, *model.SkillEditData](owner, skill, svg.GCSSkills, initSkillEditor)
 }
 
-func initSkillEditor(e *editor[*gurps.Skill, *gurps.SkillEditData], content *unison.Panel) func() {
+func initSkillEditor(e *editor[*model.Skill, *model.SkillEditData], content *unison.Panel) func() {
 	owner := e.owner.AsPanel().Self
 	_, ownerIsSheet := owner.(*Sheet)
 	_, ownerIsTemplate := owner.(*Template)
 	addNameLabelAndField(content, &e.editorData.Name)
-	isTechnique := strings.HasPrefix(e.target.Type, gid.Technique)
+	isTechnique := strings.HasPrefix(e.target.Type, model.TechniqueID)
 	if !e.target.Container() && !isTechnique {
 		addSpecializationLabelAndField(content, &e.editorData.Specialization)
 		addTechLevelRequired(content, &e.editorData.TechLevel, ownerIsSheet)
@@ -51,11 +48,11 @@ func initSkillEditor(e *editor[*gurps.Skill, *gurps.SkillEditData], content *uni
 				HAlign: unison.FillAlignment,
 				HGrab:  true,
 			})
-			flags := gurps.TenFlag
+			flags := model.TenFlag
 			if isTechnique {
-				flags |= gurps.SkillFlag + gurps.ParryFlag + gurps.BlockFlag + gurps.DodgeFlag
+				flags |= model.SkillFlag + model.ParryFlag + model.BlockFlag + model.DodgeFlag
 			}
-			choices, attrChoice := gurps.AttributeChoices(e.target.Entity, "", flags, e.editorData.TechniqueDefault.DefaultType)
+			choices, attrChoice := model.AttributeChoices(e.target.Entity, "", flags, e.editorData.TechniqueDefault.DefaultType)
 			attrChoicePopup := addPopup(wrapper, choices, &attrChoice)
 			skillDefNameField := addStringField(wrapper, i18n.Text("Technique Default Skill Name"),
 				i18n.Text("Skill Name"), &e.editorData.TechniqueDefault.Name)
@@ -71,7 +68,7 @@ func initSkillEditor(e *editor[*gurps.Skill, *gurps.SkillEditData], content *uni
 				HAlign: unison.FillAlignment,
 				HGrab:  true,
 			})
-			lastWasSkillBased := skill.DefaultTypeIsSkillBased(e.editorData.TechniqueDefault.DefaultType)
+			lastWasSkillBased := model.DefaultTypeIsSkillBased(e.editorData.TechniqueDefault.DefaultType)
 			if !lastWasSkillBased {
 				skillDefNameField.RemoveFromParent()
 				skillDefSpecialtyField.RemoveFromParent()
@@ -79,9 +76,9 @@ func initSkillEditor(e *editor[*gurps.Skill, *gurps.SkillEditData], content *uni
 			addDecimalField(wrapper, nil, "", i18n.Text("Technique Default Adjustment"),
 				i18n.Text("Default Adjustment"), &e.editorData.TechniqueDefault.Modifier, -fxp.NinetyNine,
 				fxp.NinetyNine)
-			attrChoicePopup.SelectionCallback = func(_ int, item *gurps.AttributeChoice) {
+			attrChoicePopup.SelectionCallback = func(_ int, item *model.AttributeChoice) {
 				e.editorData.TechniqueDefault.DefaultType = item.Key
-				if skillBased := skill.DefaultTypeIsSkillBased(e.editorData.TechniqueDefault.DefaultType); skillBased != lastWasSkillBased {
+				if skillBased := model.DefaultTypeIsSkillBased(e.editorData.TechniqueDefault.DefaultType); skillBased != lastWasSkillBased {
 					lastWasSkillBased = skillBased
 					if skillBased {
 						wrapper.AddChildAtIndex(skillDefNameField, len(wrapper.Children())-1)
@@ -124,7 +121,7 @@ func initSkillEditor(e *editor[*gurps.Skill, *gurps.SkillEditData], content *uni
 				}))
 			adjustFieldBlank(limitField, e.editorData.TechniqueLimitModifier == nil)
 			wrapper2.AddChild(limitField)
-			addLabelAndPopup(content, i18n.Text("Difficulty"), "", skill.AllTechniqueDifficulty,
+			addLabelAndPopup(content, i18n.Text("Difficulty"), "", model.AllTechniqueDifficulty,
 				&e.editorData.Difficulty.Difficulty)
 		} else {
 			addDifficultyLabelAndFields(content, e.target.Entity, &e.editorData.Difficulty)
@@ -140,15 +137,15 @@ func initSkillEditor(e *editor[*gurps.Skill, *gurps.SkillEditData], content *uni
 			addDecimalField(wrapper, nil, "", pointsLabel, "", &e.editorData.Points, 0, fxp.MaxBasePoints)
 			wrapper.AddChild(NewFieldInteriorLeadingLabel(i18n.Text("Level")))
 			levelField := NewNonEditableField(func(field *NonEditableField) {
-				points := gurps.AdjustedPointsForNonContainerSkillOrTechnique(e.target.Entity, e.editorData.Points,
+				points := model.AdjustedPointsForNonContainerSkillOrTechnique(e.target.Entity, e.editorData.Points,
 					e.editorData.Name, e.editorData.Specialization, e.editorData.Tags, nil)
-				var level skill.Level
+				var level model.Level
 				if isTechnique {
-					level = gurps.CalculateTechniqueLevel(e.target.Entity, e.editorData.Name,
+					level = model.CalculateTechniqueLevel(e.target.Entity, e.editorData.Name,
 						e.editorData.Specialization, e.editorData.Tags, e.editorData.TechniqueDefault,
 						e.editorData.Difficulty.Difficulty, points, true, e.editorData.TechniqueLimitModifier)
 				} else {
-					level = gurps.CalculateSkillLevel(e.target.Entity, e.editorData.Name, e.editorData.Specialization,
+					level = model.CalculateSkillLevel(e.target.Entity, e.editorData.Name, e.editorData.Specialization,
 						e.editorData.Tags, e.editorData.DefaultedFrom, e.editorData.Difficulty, points,
 						e.editorData.EncumbrancePenaltyMultiplier)
 				}
@@ -160,7 +157,7 @@ func initSkillEditor(e *editor[*gurps.Skill, *gurps.SkillEditData], content *uni
 					if isTechnique {
 						rsl += e.editorData.TechniqueDefault.Modifier
 					}
-					field.Text = lvl.String() + "/" + gurps.FormatRelativeSkill(e.target.Entity, e.target.Type,
+					field.Text = lvl.String() + "/" + model.FormatRelativeSkill(e.target.Entity, e.target.Type,
 						e.editorData.Difficulty, rsl)
 				}
 				field.MarkForLayoutAndRedraw()
@@ -177,7 +174,7 @@ func initSkillEditor(e *editor[*gurps.Skill, *gurps.SkillEditData], content *uni
 		content.AddChild(newPrereqPanel(e.target.Entity, &e.editorData.Prereq))
 		content.AddChild(newDefaultsPanel(e.target.Entity, &e.editorData.Defaults))
 		content.AddChild(newFeaturesPanel(e.target.Entity, e.target, &e.editorData.Features))
-		for _, wt := range weapon.AllType {
+		for _, wt := range model.AllWeaponType {
 			content.AddChild(newWeaponsPanel(e, e.target, wt, &e.editorData.Weapons))
 		}
 		content.AddChild(newStudyPanel(e.target.Entity, &e.editorData.Study))

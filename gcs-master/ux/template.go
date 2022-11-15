@@ -17,13 +17,8 @@ import (
 	"path/filepath"
 
 	"github.com/google/uuid"
+	"github.com/richardwilkes/gcs/v5/model"
 	"github.com/richardwilkes/gcs/v5/model/fxp"
-	"github.com/richardwilkes/gcs/v5/model/gurps"
-	"github.com/richardwilkes/gcs/v5/model/gurps/gid"
-	gsettings "github.com/richardwilkes/gcs/v5/model/gurps/settings"
-	"github.com/richardwilkes/gcs/v5/model/library"
-	"github.com/richardwilkes/gcs/v5/model/settings"
-	"github.com/richardwilkes/gcs/v5/model/theme"
 	"github.com/richardwilkes/gcs/v5/svg"
 	"github.com/richardwilkes/toolbox/i18n"
 	"github.com/richardwilkes/toolbox/log/jot"
@@ -48,14 +43,14 @@ type Template struct {
 	undoMgr           *unison.UndoManager
 	toolbar           *unison.Panel
 	scroll            *unison.ScrollPanel
-	template          *gurps.Template
+	template          *model.Template
 	crc               uint64
 	content           *templateContent
-	Traits            *PageList[*gurps.Trait]
-	Skills            *PageList[*gurps.Skill]
-	Spells            *PageList[*gurps.Spell]
-	Equipment         *PageList[*gurps.Equipment]
-	Notes             *PageList[*gurps.Note]
+	Traits            *PageList[*model.Trait]
+	Skills            *PageList[*model.Skill]
+	Spells            *PageList[*model.Spell]
+	Equipment         *PageList[*model.Equipment]
+	Notes             *PageList[*model.Note]
 	dragReroutePanel  *unison.Panel
 	scale             int
 	needsSaveAsPrompt bool
@@ -78,7 +73,7 @@ func OpenTemplates(exclude *Template) []*Template {
 
 // NewTemplateFromFile loads a GURPS template file and creates a new unison.Dockable for it.
 func NewTemplateFromFile(filePath string) (unison.Dockable, error) {
-	template, err := gurps.NewTemplateFromFile(os.DirFS(filepath.Dir(filePath)), filepath.Base(filePath))
+	template, err := model.NewTemplateFromFile(os.DirFS(filepath.Dir(filePath)), filepath.Base(filePath))
 	if err != nil {
 		return nil, err
 	}
@@ -88,13 +83,13 @@ func NewTemplateFromFile(filePath string) (unison.Dockable, error) {
 }
 
 // NewTemplate creates a new unison.Dockable for GURPS template files.
-func NewTemplate(filePath string, template *gurps.Template) *Template {
+func NewTemplate(filePath string, template *model.Template) *Template {
 	d := &Template{
 		path:              filePath,
 		undoMgr:           unison.NewUndoManager(200, func(err error) { jot.Error(err) }),
 		scroll:            unison.NewScrollPanel(),
 		template:          template,
-		scale:             settings.Global().General.InitialSheetUIScale,
+		scale:             model.GlobalSettings().General.InitialSheetUIScale,
 		crc:               template.CRC64(),
 		needsSaveAsPrompt: true,
 	}
@@ -152,7 +147,7 @@ func NewTemplate(filePath string, template *gurps.Template) *Template {
 		VGrab:  true,
 	})
 	d.scroll.DrawCallback = func(gc *unison.Canvas, rect unison.Rect) {
-		gc.DrawRect(rect, theme.PageVoidColor.Paint(gc, rect, unison.Fill))
+		gc.DrawRect(rect, model.PageVoidColor.Paint(gc, rect, unison.Fill))
 	}
 
 	addUserButton := unison.NewSVGButton(svg.Stamper)
@@ -171,8 +166,8 @@ func NewTemplate(filePath string, template *gurps.Template) *Template {
 		HGrab:  true,
 	})
 	d.toolbar.AddChild(NewDefaultInfoPop())
-	d.toolbar.AddChild(NewScaleField(gsettings.InitialUIScaleMin, gsettings.InitialUIScaleMax,
-		func() int { return settings.Global().General.InitialSheetUIScale }, func() int { return d.scale },
+	d.toolbar.AddChild(NewScaleField(model.InitialUIScaleMin, model.InitialUIScaleMax,
+		func() int { return model.GlobalSettings().General.InitialSheetUIScale }, func() int { return d.scale },
 		func(scale int) { d.scale = scale }, d.scroll, nil, false))
 	d.toolbar.AddChild(addUserButton)
 	installSearchTracker(d.toolbar, func() {
@@ -207,10 +202,10 @@ func NewTemplate(filePath string, template *gurps.Template) *Template {
 		NewCarriedEquipmentContainerItemID, d.Equipment)
 	d.installNewItemCmdHandlers(NewNoteItemID, NewNoteContainerItemID, d.Notes)
 	d.InstallCmdHandlers(AddNaturalAttacksItemID, unison.AlwaysEnabled, func(_ any) {
-		InsertItems[*gurps.Trait](d, d.Traits.Table, d.template.TraitList, d.template.SetTraitList,
-			func(_ *unison.Table[*Node[*gurps.Trait]]) []*Node[*gurps.Trait] {
+		InsertItems[*model.Trait](d, d.Traits.Table, d.template.TraitList, d.template.SetTraitList,
+			func(_ *unison.Table[*Node[*model.Trait]]) []*Node[*model.Trait] {
 				return d.Traits.provider.RootRows()
-			}, gurps.NewNaturalAttacks(nil, nil))
+			}, model.NewNaturalAttacks(nil, nil))
 	})
 	d.InstallCmdHandlers(ApplyTemplateItemID, d.canApplyTemplate, d.applyTemplate)
 
@@ -220,15 +215,15 @@ func NewTemplate(filePath string, template *gurps.Template) *Template {
 func (d *Template) keyToPanel(key string) *unison.Panel {
 	var p unison.Paneler
 	switch key {
-	case gid.Equipment:
+	case equipmentDragKey:
 		p = d.Equipment.Table
-	case gid.Skill:
+	case model.SkillID:
 		p = d.Skills.Table
-	case gid.Spell:
+	case model.SpellID:
 		p = d.Spells.Table
-	case gid.Trait:
+	case traitDragKey:
 		p = d.Traits.Table
-	case gid.Note:
+	case noteDragKey:
 		p = d.Notes.Table
 	default:
 		return nil
@@ -320,7 +315,7 @@ func (d *Template) applyTemplate(_ any) {
 	}
 }
 
-func cloneRows[T gurps.NodeTypes](table *unison.Table[*Node[T]], rows []*Node[T]) []*Node[T] {
+func cloneRows[T model.NodeTypes](table *unison.Table[*Node[T]], rows []*Node[T]) []*Node[T] {
 	rows = slices.Clone(rows)
 	for j, row := range rows {
 		rows[j] = row.CloneForTarget(table, nil)
@@ -328,7 +323,7 @@ func cloneRows[T gurps.NodeTypes](table *unison.Table[*Node[T]], rows []*Node[T]
 	return rows
 }
 
-func appendRows[T gurps.NodeTypes](table *unison.Table[*Node[T]], rows []*Node[T]) {
+func appendRows[T model.NodeTypes](table *unison.Table[*Node[T]], rows []*Node[T]) {
 	table.SetRootRows(append(slices.Clone(table.RootRows()), rows...))
 	selMap := make(map[uuid.UUID]bool, len(rows))
 	for _, row := range rows {
@@ -343,7 +338,7 @@ func appendRows[T gurps.NodeTypes](table *unison.Table[*Node[T]], rows []*Node[T
 	}
 }
 
-func processPickerRows[T gurps.NodeTypes](rows []*Node[T]) (revised []*Node[T], abort bool) {
+func processPickerRows[T model.NodeTypes](rows []*Node[T]) (revised []*Node[T], abort bool) {
 	for _, one := range ExtractNodeDataFromList(rows) {
 		result, cancel := processPickerRow(one)
 		if cancel {
@@ -356,13 +351,13 @@ func processPickerRows[T gurps.NodeTypes](rows []*Node[T]) (revised []*Node[T], 
 	return revised, false
 }
 
-func processPickerRow[T gurps.NodeTypes](row T) (revised []T, abort bool) {
-	n := gurps.AsNode[T](row)
+func processPickerRow[T model.NodeTypes](row T) (revised []T, abort bool) {
+	n := model.AsNode[T](row)
 	if !n.Container() {
 		return []T{row}, false
 	}
 	children := n.NodeChildren()
-	tpp, ok := n.(gurps.TemplatePickerProvider)
+	tpp, ok := n.(model.TemplatePickerProvider)
 	if !ok || tpp.TemplatePickerData().ShouldOmit() {
 		rowChildren := make([]T, 0, len(children))
 		for _, child := range children {
@@ -394,9 +389,9 @@ func processPickerRow[T gurps.NodeTypes](row T) (revised []T, abort bool) {
 		for i, box := range boxes {
 			if box.State == unison.OnCheckState {
 				switch tp.Type {
-				case gurps.CountTemplatePickerType:
+				case model.CountTemplatePickerType:
 					total += fxp.One
-				case gurps.PointsTemplatePickerType:
+				case model.PointsTemplatePickerType:
 					total += rawPoints(children[i])
 				}
 			}
@@ -406,7 +401,7 @@ func processPickerRow[T gurps.NodeTypes](row T) (revised []T, abort bool) {
 	for _, child := range children {
 		checkBox := unison.NewCheckBox()
 		checkBox.Text = fmt.Sprintf("%v", child)
-		if tp.Type == gurps.PointsTemplatePickerType {
+		if tp.Type == model.PointsTemplatePickerType {
 			points := rawPoints(child)
 			pointsLabel := i18n.Text("points")
 			if points == fxp.One {
@@ -445,7 +440,7 @@ func processPickerRow[T gurps.NodeTypes](row T) (revised []T, abort bool) {
 		if notes := notesCapable.Notes(); notes != "" {
 			label = unison.NewLabel()
 			label.Text = notes
-			label.Font = theme.FieldSecondaryFont
+			label.Font = model.FieldSecondaryFont
 			panel.AddChild(label)
 		}
 	}
@@ -485,11 +480,11 @@ func processPickerRow[T gurps.NodeTypes](row T) (revised []T, abort bool) {
 
 func rawPoints(child any) fxp.Int {
 	switch nc := child.(type) {
-	case *gurps.Skill:
+	case *model.Skill:
 		return nc.RawPoints()
-	case *gurps.Spell:
+	case *model.Spell:
 		return nc.RawPoints()
-	case *gurps.Trait:
+	case *model.Trait:
 		return nc.AdjustedPoints()
 	default:
 		return 0
@@ -508,7 +503,7 @@ func (d *Template) installNewItemCmdHandlers(itemID, containerID int, creator it
 }
 
 // Entity implements gurps.EntityProvider
-func (d *Template) Entity() *gurps.Entity {
+func (d *Template) Entity() *model.Entity {
 	return nil
 }
 
@@ -525,7 +520,7 @@ func (d *Template) UndoManager() *unison.UndoManager {
 // TitleIcon implements workspace.FileBackedDockable
 func (d *Template) TitleIcon(suggestedSize unison.Size) unison.Drawable {
 	return &unison.DrawableSVG{
-		SVG:  library.FileInfoFor(d.path).SVG,
+		SVG:  model.FileInfoFor(d.path).SVG,
 		Size: suggestedSize,
 	}
 }
@@ -605,7 +600,7 @@ func (d *Template) createContent() unison.Paneler {
 func (d *Template) save(forceSaveAs bool) bool {
 	success := false
 	if forceSaveAs || d.needsSaveAsPrompt {
-		success = SaveDockableAs(d, library.TemplatesExt, d.template.Save, func(path string) {
+		success = SaveDockableAs(d, model.TemplatesExt, d.template.Save, func(path string) {
 			d.crc = d.template.CRC64()
 			d.path = path
 		})
@@ -628,25 +623,25 @@ func (d *Template) createLists() {
 			if focus = focus.Parent(); focus != nil {
 				switch focus.Self {
 				case d.Traits:
-					refocusOnKey = gurps.BlockLayoutTraitsKey
+					refocusOnKey = model.BlockLayoutTraitsKey
 				case d.Skills:
-					refocusOnKey = gurps.BlockLayoutSkillsKey
+					refocusOnKey = model.BlockLayoutSkillsKey
 				case d.Spells:
-					refocusOnKey = gurps.BlockLayoutSpellsKey
+					refocusOnKey = model.BlockLayoutSpellsKey
 				case d.Equipment:
-					refocusOnKey = gurps.BlockLayoutEquipmentKey
+					refocusOnKey = model.BlockLayoutEquipmentKey
 				case d.Notes:
-					refocusOnKey = gurps.BlockLayoutNotesKey
+					refocusOnKey = model.BlockLayoutNotesKey
 				}
 			}
 		}
 	}
 	d.content.RemoveAllChildren()
-	for _, col := range settings.Global().Sheet.BlockLayout.ByRow() {
+	for _, col := range model.GlobalSettings().Sheet.BlockLayout.ByRow() {
 		rowPanel := unison.NewPanel()
 		for _, c := range col {
 			switch c {
-			case gurps.BlockLayoutTraitsKey:
+			case model.BlockLayoutTraitsKey:
 				if d.Traits == nil {
 					d.Traits = NewTraitsPageList(d, d.template)
 				} else {
@@ -656,7 +651,7 @@ func (d *Template) createLists() {
 				if c == refocusOnKey {
 					refocusOn = d.Traits.Table
 				}
-			case gurps.BlockLayoutSkillsKey:
+			case model.BlockLayoutSkillsKey:
 				if d.Skills == nil {
 					d.Skills = NewSkillsPageList(d, d.template)
 				} else {
@@ -666,7 +661,7 @@ func (d *Template) createLists() {
 				if c == refocusOnKey {
 					refocusOn = d.Skills.Table
 				}
-			case gurps.BlockLayoutSpellsKey:
+			case model.BlockLayoutSpellsKey:
 				if d.Spells == nil {
 					d.Spells = NewSpellsPageList(d, d.template)
 				} else {
@@ -676,7 +671,7 @@ func (d *Template) createLists() {
 				if c == refocusOnKey {
 					refocusOn = d.Spells.Table
 				}
-			case gurps.BlockLayoutEquipmentKey:
+			case model.BlockLayoutEquipmentKey:
 				if d.Equipment == nil {
 					d.Equipment = NewCarriedEquipmentPageList(d, d.template)
 				} else {
@@ -686,7 +681,7 @@ func (d *Template) createLists() {
 				if c == refocusOnKey {
 					refocusOn = d.Equipment.Table
 				}
-			case gurps.BlockLayoutNotesKey:
+			case model.BlockLayoutNotesKey:
 				if d.Notes == nil {
 					d.Notes = NewNotesPageList(d, d.template)
 				} else {
@@ -720,7 +715,7 @@ func (d *Template) createLists() {
 }
 
 // SheetSettingsUpdated implements gurps.SheetSettingsResponder.
-func (d *Template) SheetSettingsUpdated(entity *gurps.Entity, blockLayout bool) {
+func (d *Template) SheetSettingsUpdated(entity *model.Entity, blockLayout bool) {
 	if entity == nil {
 		d.Rebuild(blockLayout)
 	}
