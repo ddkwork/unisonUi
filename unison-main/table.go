@@ -1176,6 +1176,16 @@ func (t *Table[T]) RootRows() []T {
 	return t.Model.RootRows()
 }
 
+func (t *Table[T]) countOpenRowChildrenRecursively(row T) int {
+	count := 1
+	if row.CanHaveChildren() && row.IsOpen() {
+		for _, child := range row.Children() {
+			count += t.countOpenRowChildrenRecursively(child)
+		}
+	}
+	return count
+}
+
 // SetRootRows sets the top-level rows this table will display. This will call SyncToModel() automatically.
 func (t *Table[T]) SetRootRows(rows []T) {
 	t.filteredRows = nil
@@ -1209,16 +1219,6 @@ func (t *Table[T]) SyncToModel() {
 	t.SetFrameRect(rect)
 	t.MarkForRedraw()
 	t.MarkForLayoutRecursivelyUpward()
-}
-
-func (t *Table[T]) countOpenRowChildrenRecursively(row T) int {
-	count := 1
-	if row.CanHaveChildren() && row.IsOpen() {
-		for _, child := range row.Children() {
-			count += t.countOpenRowChildrenRecursively(child)
-		}
-	}
-	return count
 }
 
 func (t *Table[T]) buildRowCacheEntry(row T, parentIndex, index, depth int) int {
