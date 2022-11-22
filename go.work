@@ -2,6 +2,7 @@ go 1.19
 
 use (
 	.
+	../golibrary
 	skia/gcs-master
 	skia/pdf-main
 	skia/unison-main
