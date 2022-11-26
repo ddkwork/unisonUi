@@ -18,9 +18,17 @@ type (
 		DocTable()
 		List()
 		Tree()
+		PopMeanu()
 	}
-	object struct{}
+	object struct {
+		provider ux.TableProvider[*model.Weapon]
+	}
 )
+
+func (o *object) PopMeanu() {
+	//TODO implement me
+	panic("implement me")
+}
 
 func (o *object) Layout() {
 	//TODO implement me
@@ -33,7 +41,9 @@ func (o *object) App() {
 }
 
 func New() Interface {
-	return &object{}
+	return &object{
+		provider: ux.NewWeaponsProvider(p, p.weaponType, false),
+	}
 }
 
 func (o *object) ToolBar() {
@@ -59,7 +69,8 @@ func (o *object) Dialog() {
 func (o *object) Table() {
 	panic("implement me")
 }
-func newEditorTable[T model.NodeTypes](
+func NewEditorTable[T model.NodeTypes](
+	cmdRoot ux.Rebuildable,
 	parent *unison.Panel,
 	provider ux.TableProvider[T],
 ) *unison.Table[*ux.Node[T]] {
@@ -78,6 +89,11 @@ func newEditorTable[T model.NodeTypes](
 	table.InstallCmdHandlers(ux.DuplicateItemID,
 		func(_ any) bool { return table.HasSelection() },
 		func(_ any) { ux.DuplicateSelection(table) })
+
+	//todo debug
+	table.AsPanel().InstallCmdHandlers(ux.NewMeleeWeaponItemID, unison.AlwaysEnabled,
+		func(_ any) { provider.CreateItem(cmdRoot, table, ux.NoItemVariant) })
+
 	ux.InstallTableDropSupport(table, provider)
 	table.SyncToModel()
 	parent.AddChild(header)
