@@ -56,6 +56,7 @@ func CanvasObject(where unison.Point) (ok bool) {
 		return
 	}
 	w.SetTitleIcons([]*unison.Image{image})
+
 	installDefaultMenus(w)
 	content := w.Content()
 	content.SetLayout(&unison.FlexLayout{Columns: 1})
