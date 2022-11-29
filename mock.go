@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/ddkwork/unisonUi/packets"
 	"github.com/google/uuid"
-	"github.com/richardwilkes/unison"
 	"net/http"
 	"sync/atomic"
 	"time"
@@ -34,8 +33,8 @@ func (o *object) mitmMock() {
 			if i%2 == 1 {
 				packet.IsWebsocket = true
 			}
-			panel.InstallCmdHandlers(i, unison.AlwaysEnabled,
-				func(_ any) { creator.CreateItem(panel, ContainerItemVariant) })
+			//panel.InstallCmdHandlers(i, unison.AlwaysEnabled,
+			//	func(_ any) { creator.CreateItem(panel, ContainerItemVariant) })
 			o.AddRow(packet)
 			time.Sleep(time.Second)
 		}

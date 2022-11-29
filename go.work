@@ -3,7 +3,6 @@ go 1.19
 use (
 	.
 	../golibrary
-	skia/gcs
-	skia/unison
-	skia/pdf
+	../gcs
+	../unison
 )
