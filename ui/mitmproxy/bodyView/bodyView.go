@@ -45,6 +45,5 @@ func CreateBodyView() *unison.Dock {
 		HGrab:  true,
 		VGrab:  true,
 	})
-
 	return dock
 }

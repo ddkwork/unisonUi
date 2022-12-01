@@ -15,7 +15,26 @@ import (
 
 func main() {
 	unison.AttachConsole()
-	unison.Start(unison.StartupFinishedCallback(func() { CanvasObject(unison.PrimaryDisplay().Usable.Point) }))
+	unison.Start(unison.StartupFinishedCallback(func() {
+		w, err := unison.NewWindow(fmt.Sprintf("mitmproxy"))
+		if err != nil {
+			return
+		}
+		w.MinMaxContentSizeCallback = func() (min, max unison.Size) {
+			return unison.NewSize(1000, 600), unison.NewSize(10000, 1280)
+		}
+		image, err := unison.NewImageFromBytes(asserts.MitmBuf, 0.5)
+		if !mylog.Error(err) {
+			return
+		}
+		w.SetTitleIcons([]*unison.Image{image})
+		CanvasObject(w)
+		w.Pack()
+		rect := w.FrameRect()
+		rect.Point = unison.PrimaryDisplay().Usable.Point
+		w.SetFrameRect(rect)
+		w.ToFront()
+	}))
 }
 
 type (
@@ -48,20 +67,7 @@ type (
 )
 
 func New() *object { return &object{} }
-func CanvasObject(where unison.Point) (ok bool) {
-	w, err := unison.NewWindow(fmt.Sprintf("mitmproxy"))
-	if err != nil {
-		return
-	}
-	w.MinMaxContentSizeCallback = func() (min, max unison.Size) {
-		return unison.NewSize(1000, 600), unison.NewSize(10000, 1280)
-	}
-	image, err := unison.NewImageFromBytes(asserts.MitmBuf, 0.5)
-	if !mylog.Error(err) {
-		return
-	}
-	w.SetTitleIcons([]*unison.Image{image})
-
+func CanvasObject(w *unison.Window) (ok bool) {
 	menus.InstallDefaultMenus(w)
 	content := w.Content()
 	content.SetLayout(&unison.FlexLayout{Columns: 1})
@@ -69,12 +75,6 @@ func CanvasObject(where unison.Point) (ok bool) {
 	//content.AddChild(CreatTable()) //todo set high
 	//content.AddChild(createFilter())
 	content.AddChild(bodyView.CreateBodyView())
-
-	w.Pack()
-	rect := w.FrameRect()
-	rect.Point = where
-	w.SetFrameRect(rect)
-	w.ToFront()
 	return true
 }
 
