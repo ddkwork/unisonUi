@@ -46,7 +46,7 @@ func CreatTable() *unison.Panel {
 		doubleHeight: false,
 		RWMutex:      sync.RWMutex{},
 	}
-	o.table.ShowRowDivider = false
+	//o.table.ShowRowDivider = false
 	o.Table().SelectionChangedCallback = func() {
 		//todo get packet to table page
 	}
