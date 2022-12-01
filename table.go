@@ -60,61 +60,16 @@ func CreatTable() *unison.Panel {
 	table.ColumnSizes[0].Minimum = 20
 	//table.ColumnSizes[0].Minimum = checkColSize.Width
 	//table.ColumnSizes[0].Maximum = checkColSize.Width
+	o.mitmMock()
+	panel.InstallCmdHandlers(
+		0,
+		func(a any) bool {
 
-	panel.InstallCmdHandlers()
+		},
+		func(a any) {
 
-	//rows = append(rows, &demoRow{
-	//	table: table,
-	//	id:    uuid.New(),
-	//	text:  fmt.Sprintf("Row %d", 1),
-	//	text2: fmt.Sprintf("Some longer content for Row %d", 1),
-	//})
-	//table.SetRootRows(rows)
-	//go func() {
-	for i := range rows {
-		row := &demoRow{
-			table: table,
-			id:    uuid.New(),
-			text:  fmt.Sprintf("Row %d", i+1),
-			text2: fmt.Sprintf("Some longer content for Row %d", i+1),
-		}
-		if i%10 == 3 {
-			if i == 3 {
-				row.doubleHeight = true
-			}
-			row.container = true
-			row.open = true
-			row.children = make([]*demoRow, 5)
-			for j := range row.children {
-				child := &demoRow{
-					table:  table,
-					parent: row,
-					id:     uuid.New(),
-					text:   fmt.Sprintf("Sub Row %d", j+1),
-				}
-				row.children[j] = child
-				if j < 2 {
-					child.container = true
-					child.open = true
-					child.children = make([]*demoRow, 2)
-					for k := range child.children {
-						child.children[k] = &demoRow{
-							table:  table,
-							parent: child,
-							id:     uuid.New(),
-							text:   fmt.Sprintf("Sub Sub Row %d", k+1),
-						}
-					}
-				}
-			}
-		}
-		rows[i] = row
-		//rows = append(rows, row)
-		//table.SyncToModel()
-		//table.SetRootRows(rows)
-		//time.Sleep(time.Second)
-	}
-	//}()
+		},
+	)
 	table.SetRootRows(rows)
 
 	table.SyncToModel()
