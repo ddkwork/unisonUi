@@ -64,13 +64,12 @@ func CreatTable() *unison.Panel {
 	panel.InstallCmdHandlers(
 		0,
 		func(a any) bool {
-
+			//todo make node object and add item
 		},
 		func(a any) {
-
+			table.SetRootRows(rows)
 		},
 	)
-	table.SetRootRows(rows)
 
 	table.SyncToModel()
 	table.SizeColumnsToFit(true)
