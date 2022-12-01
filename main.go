@@ -74,7 +74,7 @@ func CanvasObject(w *unison.Window) (ok bool) {
 	content := w.Content()
 	content.SetLayout(&unison.FlexLayout{Columns: 1})
 	content.AddChild(toolbar.CreateToolBar())
-	//content.AddChild(CreatTable()) //todo set high
+	content.AddChild(CreatTable()) //todo set high
 	content.AddChild(filter.CreateFilter())
 	content.AddChild(bodyView.CreateBodyView())
 	return true
