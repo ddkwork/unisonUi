@@ -5,9 +5,8 @@ import (
 	"github.com/richardwilkes/unison"
 )
 
-var dock = unison.NewDock()
-
 func CreateBodyView() *unison.Dock {
+	var dock = unison.NewDock()
 	yellowDockable := NewDockablePanel(packets.NameBodyKind.HttpDump(), "Request", unison.Yellow)
 	dock.DockTo(yellowDockable, nil, unison.TopSide)
 	unison.Ancestor[*unison.DockContainer](yellowDockable).Stack(NewDockablePanel(packets.NameBodyKind.HexDump(), "", unison.Yellow), -1)
@@ -39,7 +38,7 @@ func CreateBodyView() *unison.Dock {
 
 	dock.SetLayoutData(&unison.FlexLayoutData{
 		HSpan:  1,
-		VSpan:  100,
+		VSpan:  200,
 		HAlign: unison.FillAlignment,
 		VAlign: unison.FillAlignment,
 		HGrab:  true,

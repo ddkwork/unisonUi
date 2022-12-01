@@ -68,6 +68,7 @@ type (
 
 func New() *object { return &object{} }
 func CanvasObject(w *unison.Window) (ok bool) {
+	//return CanvasObject_(w)
 	menus.InstallDefaultMenus(w)
 	content := w.Content()
 	content.SetLayout(&unison.FlexLayout{Columns: 1})

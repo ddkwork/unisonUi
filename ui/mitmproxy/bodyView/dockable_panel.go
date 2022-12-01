@@ -47,20 +47,16 @@ func NewDockablePanel(title, tip string, background unison.Ink) *DockablePanel {
 	return d
 }
 
-func (d *DockablePanel) draw(canvas *unison.Canvas, rect unison.Rect) {
-	canvas.DrawRect(rect, d.Color.Paint(canvas, rect, unison.Fill))
+func (d *DockablePanel) draw(gc *unison.Canvas, rect unison.Rect) {
+	gc.DrawRect(rect, d.Color.Paint(gc, rect, unison.Fill))
 	if d.Focused() {
 		txt := unison.NewText("Focused", &unison.TextDecoration{
-			Font:           unison.EmphasizedSystemFont,
-			Foreground:     nil,
-			Background:     nil,
-			BaselineOffset: 0,
-			Underline:      false,
-			StrikeThrough:  false,
+			Font:       unison.EmphasizedSystemFont,
+			Foreground: unison.Black,
 		})
 		r := d.ContentRect(false)
 		size := txt.Extents()
-		txt.Draw(canvas, r.X+(r.Width-size.Width)/2, r.Y+(r.Height-size.Height)/2+txt.Baseline())
+		txt.Draw(gc, r.X+(r.Width-size.Width)/2, r.Y+(r.Height-size.Height)/2+txt.Baseline())
 	}
 }
 
@@ -75,7 +71,7 @@ func (d *DockablePanel) mouseDown(where unison.Point, button, clickCount int, mo
 // TitleIcon implements Dockable.
 func (d *DockablePanel) TitleIcon(suggestedSize unison.Size) unison.Drawable {
 	return &unison.DrawableSVG{
-		//SVG:  unison.DocumentSVG(),
+		SVG:  unison.DocumentSVG,
 		Size: suggestedSize,
 	}
 }
