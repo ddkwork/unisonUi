@@ -14,8 +14,8 @@ import (
 )
 
 var (
-	_ unison.Dockable  = &DockablePanel{}
-	_ unison.TabCloser = &DockablePanel{}
+	_ unison.Dockable = &DockablePanel{}
+	//_ unison.TabCloser = &DockablePanel{}
 )
 
 // DockablePanel provides a sample dockable panel.
@@ -92,17 +92,17 @@ func (d *DockablePanel) Modified() bool {
 	return false
 }
 
-// MayAttemptClose implements TabCloser.
-func (d *DockablePanel) MayAttemptClose() bool {
-	return false
-}
-
-// AttemptClose implements TabCloser.
-func (d *DockablePanel) AttemptClose() bool {
-	return false
-	if dc := unison.Ancestor[*unison.DockContainer](d); dc != nil {
-		dc.Close(d)
-		return true
-	}
-	return false
-}
+//// MayAttemptClose implements TabCloser.
+//func (d *DockablePanel) MayAttemptClose() bool {
+//	return false
+//}
+//
+//// AttemptClose implements TabCloser.
+//func (d *DockablePanel) AttemptClose() bool {
+//	return false
+//	if dc := unison.Ancestor[*unison.DockContainer](d); dc != nil {
+//		dc.Close(d)
+//		return true
+//	}
+//	return false
+//}
