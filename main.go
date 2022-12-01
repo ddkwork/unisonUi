@@ -78,19 +78,7 @@ func CanvasObject(w *unison.Window) (ok bool) {
 	return true
 }
 
-func CanvasObject_(where unison.Point) (ok bool) {
-	w, err := unison.NewWindow("mitmproxy")
-	if !mylog.Error(err) {
-		return
-	}
-	w.MinMaxContentSizeCallback = func() (min, max unison.Size) {
-		return unison.NewSize(1000, 600), unison.NewSize(10000, 1280)
-	}
-	image, err := unison.NewImageFromBytes(asserts.MitmBuf, 0.5)
-	if !mylog.Error(err) {
-		return
-	}
-	w.SetTitleIcons([]*unison.Image{image})
+func CanvasObject_(w *unison.Window) (ok bool) {
 	o := &object{
 		Object:  packets.Object{},
 		packets: nil,
@@ -156,10 +144,5 @@ func CanvasObject_(where unison.Point) (ok bool) {
 		VGrab:  true,
 	})
 	content.AddChild(scrollArea)
-	w.Pack()
-	rect := w.FrameRect()
-	rect.Point = where
-	w.SetFrameRect(rect)
-	w.ToFront()
 	return true
 }
