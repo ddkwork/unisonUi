@@ -5,7 +5,7 @@
 //go:build windows
 // +build windows
 
-package drop
+package dropfile
 
 import (
 	"github.com/lxn/win"
