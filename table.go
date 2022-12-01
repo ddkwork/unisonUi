@@ -116,6 +116,8 @@ func CreatTable() *unison.Panel {
 	}
 	//}()
 	table.SetRootRows(rows)
+
+	table.SyncToModel()
 	table.SizeColumnsToFit(true)
 	table.InstallDragSupport(nil, "object", "Row", "Rows")
 	unison.InstallDropSupport[*demoRow, any](table, "object", func(from, to *unison.Table[*demoRow]) bool { return from == to }, nil, nil)
