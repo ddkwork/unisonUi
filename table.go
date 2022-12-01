@@ -9,30 +9,19 @@ import (
 	"sync"
 )
 
-func createCheckBox(title string, initialState unison.CheckState, panel *unison.Panel) *unison.CheckBox {
-	check := unison.NewCheckBox()
-	check.Text = title
-	check.State = initialState
-	check.ClickCallback = func() { jot.Infof("'%s' was clicked.", title) }
-	check.Tooltip = unison.NewTooltipWithText(fmt.Sprintf("This is the tooltip for '%s'", title))
-	panel.AddChild(check)
-	return check
-}
-
-const topLevelRowsToMake = 10
-
-var table = unison.NewTable[*demoRow](&unison.SimpleTableModel[*demoRow]{})
-var panel = unison.NewPanel()
-
-var rows = make([]*demoRow, topLevelRowsToMake)
-
-//var rows = make([]*demoRow, 0)
-
 func CreatTable() *unison.Panel {
+	var scrollArea = unison.NewScrollPanel()
+	const topLevelRowsToMake = 10
+
+	var table = unison.NewTable[*demoRow](&unison.SimpleTableModel[*demoRow]{})
+	var panel = unison.NewPanel()
+
+	var rows = make([]*demoRow, topLevelRowsToMake)
+
+	//var rows = make([]*demoRow, 0)
 	panel.SetLayout(&unison.FlexLayout{
 		Columns: 1,
 	})
-
 	//panel.SetSizer(func(hint unison.Size) (min, pref, max unison.Size) {
 	//	//pref.Width = 200
 	//	//pref.Height = 100
@@ -71,6 +60,9 @@ func CreatTable() *unison.Panel {
 	table.ColumnSizes[0].Minimum = 20
 	//table.ColumnSizes[0].Minimum = checkColSize.Width
 	//table.ColumnSizes[0].Maximum = checkColSize.Width
+
+	panel.InstallCmdHandlers()
+
 	//rows = append(rows, &demoRow{
 	//	table: table,
 	//	id:    uuid.New(),
@@ -126,17 +118,7 @@ func CreatTable() *unison.Panel {
 	table.SetRootRows(rows)
 	table.SizeColumnsToFit(true)
 	table.InstallDragSupport(nil, "object", "Row", "Rows")
-	unison.InstallDropSupport[*demoRow, any](table, "object",
-		func(from, to *unison.Table[*demoRow]) bool { return from == to }, nil, nil)
-
-	//header := unison.NewTableHeader[*demoRow](table,
-	//	unison.NewTableColumnHeader[*demoRow]("", ""),
-	//	unison.NewTableColumnHeader[*demoRow]("First", ""),
-	//	unison.NewTableColumnHeader[*demoRow]("First", ""),
-	//	unison.NewTableColumnHeader[*demoRow]("First", ""),
-	//	unison.NewTableColumnHeader[*demoRow]("Second", ""),
-	//	unison.NewTableColumnHeader[*demoRow]("xyz", ""),
-	//)
+	unison.InstallDropSupport[*demoRow, any](table, "object", func(from, to *unison.Table[*demoRow]) bool { return from == to }, nil, nil)
 	header := unison.NewTableHeader[*demoRow](table, unison.NewTableColumnHeader[*object]("", "")) //check
 	for _, s := range o.Header() {
 		header.ColumnHeaders = append(header.ColumnHeaders, unison.NewTableColumnHeader[*object](s, "")) //add header
@@ -176,4 +158,12 @@ func CreatTable() *unison.Panel {
 	return panel
 }
 
-var scrollArea = unison.NewScrollPanel()
+func createCheckBox(title string, initialState unison.CheckState, panel *unison.Panel) *unison.CheckBox {
+	check := unison.NewCheckBox()
+	check.Text = title
+	check.State = initialState
+	check.ClickCallback = func() { jot.Infof("'%s' was clicked.", title) }
+	check.Tooltip = unison.NewTooltipWithText(fmt.Sprintf("This is the tooltip for '%s'", title))
+	panel.AddChild(check)
+	return check
+}
