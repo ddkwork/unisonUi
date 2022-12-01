@@ -2,7 +2,7 @@ package filter
 
 import "github.com/richardwilkes/unison"
 
-func createFilter() *unison.Panel {
+func CreateFilter() *unison.Panel {
 	panel := unison.NewPanel()
 	panel.SetLayout(&unison.FlexLayout{
 		Columns:      10,

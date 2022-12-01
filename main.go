@@ -6,6 +6,7 @@ import (
 	"github.com/ddkwork/unisonUi/asserts"
 	"github.com/ddkwork/unisonUi/packets"
 	"github.com/ddkwork/unisonUi/ui/mitmproxy/bodyView"
+	"github.com/ddkwork/unisonUi/ui/mitmproxy/bodyView/filter"
 	"github.com/ddkwork/unisonUi/ui/mitmproxy/menus"
 	"github.com/ddkwork/unisonUi/ui/mitmproxy/toolbar"
 	"github.com/google/uuid"
@@ -74,7 +75,7 @@ func CanvasObject(w *unison.Window) (ok bool) {
 	content.SetLayout(&unison.FlexLayout{Columns: 1})
 	content.AddChild(toolbar.CreateToolBar())
 	//content.AddChild(CreatTable()) //todo set high
-	//content.AddChild(createFilter())
+	content.AddChild(filter.CreateFilter())
 	content.AddChild(bodyView.CreateBodyView())
 	return true
 }
