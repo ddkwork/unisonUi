@@ -1,4 +1,4 @@
-package main
+package table
 
 import (
 	"fmt"
@@ -77,7 +77,8 @@ func (o *object) AddRow(packet packets.Object) {
 func (o *object) Table() *unison.Table[*object] { return o.table }
 func (o *object) Header() []string {
 	return []string{
-		"Index",
+		//checkBox todo add checkBox
+		"Proto", //todo add Proto with ico
 		packets.NamePacketField.Method(),
 		packets.NamePacketField.Scheme(),
 		packets.NamePacketField.Host(),

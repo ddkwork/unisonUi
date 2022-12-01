@@ -2,11 +2,12 @@ package menus
 
 import (
 	"github.com/ddkwork/unisonUi/ui/mitmproxy/about"
+	"github.com/ddkwork/unisonUi/widget"
 	"github.com/richardwilkes/unison"
 )
 
-func InstallDefaultMenus(wnd *unison.Window) {
-	unison.DefaultMenuFactory().BarForWindow(wnd, func(m unison.Menu) {
+func New(wnd *unison.Window) {
+	widget.NewMenus(wnd, func(m unison.Menu) {
 		unison.InsertStdMenus(m, about.ShowAboutWindow, nil, nil)
 		fileMenu := m.Menu(unison.FileMenuID)
 		f := fileMenu.Factory()

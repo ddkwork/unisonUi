@@ -2,39 +2,39 @@ package bodyView
 
 import (
 	"github.com/ddkwork/unisonUi/packets"
+	"github.com/ddkwork/unisonUi/widget/apptable"
 	"github.com/richardwilkes/unison"
 )
 
-func CreateBodyView() *unison.Dock {
+func CreateBodyView() *unison.Dock { //todo move all to BottomSide
 	var dock = unison.NewDock()
-	yellowDockable := NewDockablePanel(packets.NameBodyKind.HttpDump(), "Request", unison.Yellow)
-	dock.DockTo(yellowDockable, nil, unison.TopSide)
-	unison.Ancestor[*unison.DockContainer](yellowDockable).Stack(NewDockablePanel(packets.NameBodyKind.HexDump(), "", unison.Yellow), -1)
-	unison.Ancestor[*unison.DockContainer](yellowDockable).Stack(NewDockablePanel(packets.NameBodyKind.Steam(), "", unison.Yellow), -1)
-	unison.Ancestor[*unison.DockContainer](yellowDockable).Stack(NewDockablePanel(packets.NameBodyKind.ProtoBuf(), "", unison.Yellow), -1)
-	unison.Ancestor[*unison.DockContainer](yellowDockable).Stack(NewDockablePanel(packets.NameBodyKind.Tdf(), "", unison.Yellow), -1)
-	unison.Ancestor[*unison.DockContainer](yellowDockable).Stack(NewDockablePanel(packets.NameBodyKind.Taf(), "", unison.Yellow), -1)
-	unison.Ancestor[*unison.DockContainer](yellowDockable).Stack(NewDockablePanel(packets.NameBodyKind.Acc(), "", unison.Yellow), -1)
-	unison.Ancestor[*unison.DockContainer](yellowDockable).Stack(NewDockablePanel(packets.NameBodyKind.Websocket(), "", unison.Yellow), -1)
-	unison.Ancestor[*unison.DockContainer](yellowDockable).Stack(NewDockablePanel(packets.NameBodyKind.Msgpack(), "", unison.Yellow), -1)
-	unison.Ancestor[*unison.DockContainer](yellowDockable).Stack(NewDockablePanel(packets.NameBodyKind.Notes(), "", unison.Yellow), -1)
-	unison.Ancestor[*unison.DockContainer](yellowDockable).Stack(NewDockablePanel(packets.NameBodyKind.UnitTest(), "", unison.Yellow), -1)
-	unison.Ancestor[*unison.DockContainer](yellowDockable).Stack(NewDockablePanel(packets.NameBodyKind.GitProxy(), "", unison.Yellow), -1)
+	yellow := apptable.New(packets.NameBodyKind.HttpDump(), "Request", unison.Yellow)
+	dock.DockTo(yellow, nil, unison.BottomSide)
+	unison.Ancestor[*unison.DockContainer](yellow).Stack(apptable.New(packets.NameBodyKind.HexDump(), "", unison.Yellow), -1)
+	unison.Ancestor[*unison.DockContainer](yellow).Stack(apptable.New(packets.NameBodyKind.Steam(), "", unison.Yellow), -1)
+	unison.Ancestor[*unison.DockContainer](yellow).Stack(apptable.New(packets.NameBodyKind.ProtoBuf(), "", unison.Yellow), -1)
+	unison.Ancestor[*unison.DockContainer](yellow).Stack(apptable.New(packets.NameBodyKind.Tdf(), "", unison.Yellow), -1)
+	unison.Ancestor[*unison.DockContainer](yellow).Stack(apptable.New(packets.NameBodyKind.Taf(), "", unison.Yellow), -1)
+	unison.Ancestor[*unison.DockContainer](yellow).Stack(apptable.New(packets.NameBodyKind.Acc(), "", unison.Yellow), -1)
+	unison.Ancestor[*unison.DockContainer](yellow).Stack(apptable.New(packets.NameBodyKind.Websocket(), "", unison.Yellow), -1)
+	unison.Ancestor[*unison.DockContainer](yellow).Stack(apptable.New(packets.NameBodyKind.Msgpack(), "", unison.Yellow), -1)
+	unison.Ancestor[*unison.DockContainer](yellow).Stack(apptable.New(packets.NameBodyKind.Notes(), "", unison.Yellow), -1)
+	unison.Ancestor[*unison.DockContainer](yellow).Stack(apptable.New(packets.NameBodyKind.UnitTest(), "", unison.Yellow), -1)
+	unison.Ancestor[*unison.DockContainer](yellow).Stack(apptable.New(packets.NameBodyKind.GitProxy(), "", unison.Yellow), -1)
 
-	blueDockable := NewDockablePanel(packets.NameBodyKind.HttpDump(), "Response", unison.Pink)
-	//blueDockable.MayAttemptClose() //todo close button disable
-	dock.DockTo(blueDockable, nil, unison.BottomSide)
-	unison.Ancestor[*unison.DockContainer](blueDockable).Stack(NewDockablePanel(packets.NameBodyKind.HexDump(), "", unison.Pink), -1)
-	unison.Ancestor[*unison.DockContainer](blueDockable).Stack(NewDockablePanel(packets.NameBodyKind.Steam(), "", unison.Pink), -1)
-	unison.Ancestor[*unison.DockContainer](blueDockable).Stack(NewDockablePanel(packets.NameBodyKind.ProtoBuf(), "", unison.Pink), -1)
-	unison.Ancestor[*unison.DockContainer](blueDockable).Stack(NewDockablePanel(packets.NameBodyKind.Tdf(), "", unison.Pink), -1)
-	unison.Ancestor[*unison.DockContainer](blueDockable).Stack(NewDockablePanel(packets.NameBodyKind.Taf(), "", unison.Pink), -1)
-	unison.Ancestor[*unison.DockContainer](blueDockable).Stack(NewDockablePanel(packets.NameBodyKind.Acc(), "", unison.Pink), -1)
-	unison.Ancestor[*unison.DockContainer](blueDockable).Stack(NewDockablePanel(packets.NameBodyKind.Websocket(), "", unison.Pink), -1)
-	unison.Ancestor[*unison.DockContainer](blueDockable).Stack(NewDockablePanel(packets.NameBodyKind.Msgpack(), "", unison.Pink), -1)
-	unison.Ancestor[*unison.DockContainer](blueDockable).Stack(NewDockablePanel(packets.NameBodyKind.Notes(), "", unison.Pink), -1)
-	unison.Ancestor[*unison.DockContainer](blueDockable).Stack(NewDockablePanel(packets.NameBodyKind.UnitTest(), "", unison.Pink), -1)
-	unison.Ancestor[*unison.DockContainer](blueDockable).Stack(NewDockablePanel(packets.NameBodyKind.GitProxy(), "", unison.Pink), -1)
+	blue := apptable.New(packets.NameBodyKind.HttpDump(), "Response", unison.Pink)
+	dock.DockTo(blue, nil, unison.BottomSide)
+	unison.Ancestor[*unison.DockContainer](blue).Stack(apptable.New(packets.NameBodyKind.HexDump(), "", unison.Pink), -1)
+	unison.Ancestor[*unison.DockContainer](blue).Stack(apptable.New(packets.NameBodyKind.Steam(), "", unison.Pink), -1)
+	unison.Ancestor[*unison.DockContainer](blue).Stack(apptable.New(packets.NameBodyKind.ProtoBuf(), "", unison.Pink), -1)
+	unison.Ancestor[*unison.DockContainer](blue).Stack(apptable.New(packets.NameBodyKind.Tdf(), "", unison.Pink), -1)
+	unison.Ancestor[*unison.DockContainer](blue).Stack(apptable.New(packets.NameBodyKind.Taf(), "", unison.Pink), -1)
+	unison.Ancestor[*unison.DockContainer](blue).Stack(apptable.New(packets.NameBodyKind.Acc(), "", unison.Pink), -1)
+	unison.Ancestor[*unison.DockContainer](blue).Stack(apptable.New(packets.NameBodyKind.Websocket(), "", unison.Pink), -1)
+	unison.Ancestor[*unison.DockContainer](blue).Stack(apptable.New(packets.NameBodyKind.Msgpack(), "", unison.Pink), -1)
+	unison.Ancestor[*unison.DockContainer](blue).Stack(apptable.New(packets.NameBodyKind.Notes(), "", unison.Pink), -1)
+	unison.Ancestor[*unison.DockContainer](blue).Stack(apptable.New(packets.NameBodyKind.UnitTest(), "", unison.Pink), -1)
+	unison.Ancestor[*unison.DockContainer](blue).Stack(apptable.New(packets.NameBodyKind.GitProxy(), "", unison.Pink), -1)
 
 	dock.SetLayoutData(&unison.FlexLayoutData{
 		HSpan:  1,

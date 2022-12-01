@@ -1,4 +1,4 @@
-package main
+package table
 
 import (
 	"fmt"
@@ -65,6 +65,7 @@ func CreatTable() *unison.Panel {
 		0,
 		func(a any) bool {
 			//todo make node object and add item
+			return true
 		},
 		func(a any) {
 			table.SetRootRows(rows)

@@ -1,9 +1,6 @@
-package main
+package table
 
 import (
-	"fmt"
-	"github.com/ddkwork/golibrary/mylog"
-	"github.com/ddkwork/unisonUi/asserts"
 	"github.com/ddkwork/unisonUi/packets"
 	"github.com/ddkwork/unisonUi/ui/mitmproxy/bodyView"
 	"github.com/ddkwork/unisonUi/ui/mitmproxy/bodyView/filter"
@@ -13,30 +10,6 @@ import (
 	"github.com/richardwilkes/unison"
 	"sync"
 )
-
-func main() {
-	unison.AttachConsole()
-	unison.Start(unison.StartupFinishedCallback(func() {
-		w, err := unison.NewWindow(fmt.Sprintf("mitmproxy"))
-		if err != nil {
-			return
-		}
-		w.MinMaxContentSizeCallback = func() (min, max unison.Size) {
-			return unison.NewSize(1000, 600), unison.NewSize(10000, 1280)
-		}
-		image, err := unison.NewImageFromBytes(asserts.MitmBuf, 0.5)
-		if !mylog.Error(err) {
-			return
-		}
-		w.SetTitleIcons([]*unison.Image{image})
-		CanvasObject(w)
-		w.Pack()
-		rect := w.FrameRect()
-		rect.Point = unison.PrimaryDisplay().Usable.Point
-		w.SetFrameRect(rect)
-		w.ToFront()
-	}))
-}
 
 type (
 	ui interface {
@@ -70,7 +43,7 @@ type (
 func New() *object { return &object{} }
 func CanvasObject(w *unison.Window) (ok bool) {
 	//return CanvasObject_(w)
-	menus.InstallDefaultMenus(w)
+	menus.New(w)
 	content := w.Content()
 	content.SetLayout(&unison.FlexLayout{Columns: 1})
 	content.AddChild(toolbar.CreateToolBar())

@@ -5,7 +5,7 @@ import (
 	"github.com/richardwilkes/unison"
 )
 
-func CreateFilter() *unison.Field {
+func CreateFilter() *unison.Field { //todo redisgn
 	filter := i18n.Text("Content Filter")
 	filterField := unison.NewField()
 	filterField.Watermark = filter
