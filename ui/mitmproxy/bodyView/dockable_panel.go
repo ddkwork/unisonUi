@@ -93,11 +93,12 @@ func (d *DockablePanel) Modified() bool {
 
 // MayAttemptClose implements TabCloser.
 func (d *DockablePanel) MayAttemptClose() bool {
-	return true
+	return false
 }
 
 // AttemptClose implements TabCloser.
 func (d *DockablePanel) AttemptClose() bool {
+	return false
 	if dc := unison.Ancestor[*unison.DockContainer](d); dc != nil {
 		dc.Close(d)
 		return true
