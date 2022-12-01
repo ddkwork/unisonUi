@@ -70,6 +70,7 @@ func (d *DockablePanel) mouseDown(where unison.Point, button, clickCount int, mo
 
 // TitleIcon implements Dockable.
 func (d *DockablePanel) TitleIcon(suggestedSize unison.Size) unison.Drawable {
+	return nil
 	return &unison.DrawableSVG{
 		SVG:  unison.DocumentSVG,
 		Size: suggestedSize,
