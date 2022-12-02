@@ -1,6 +1,7 @@
 package table
 
 import (
+	"github.com/ddkwork/golibrary/mylog"
 	"github.com/ddkwork/unisonUi/packets"
 	"github.com/ddkwork/unisonUi/ui/mitmproxy/bodyView"
 	"github.com/ddkwork/unisonUi/ui/mitmproxy/bodyView/filter"
@@ -48,22 +49,20 @@ func CanvasObject(w *unison.Window) (ok bool) {
 	content := w.Content()
 	content.SetLayout(&unison.FlexLayout{Columns: 1})
 	content.AddChild(toolbar.CreateToolBar())
-	ux.RegisterKnownFileTypes()
-	//model.GlobalSettings()
-	ux.NewWorkspace(w)
-	//OpenFiles(files)
-	f := "C:\\Users\\Admin\\GCS\\User Library\\Steward.gct"
-	f = "Steward.gct"
-	//var dock unison.Dockable
-	//ux.DisplayNewDockable(w,dock)
-	//ux.OpenFiles([]string{f})
-	dockable, open := ux.OpenFile(w, f)
-	if !open {
-		return
-	}
-	//unison.OpenFilesCallback(ux.OpenFiles)
-	content.AddChild(dockable) //todo set high
-	//content.AddChild(CreatTable()) //todo set high
+
+	go func() {
+		ux.RegisterKnownFileTypes()
+		ux.NewWorkspace(w)
+		f := "Steward.gct"
+		dockable, open := ux.OpenFile(w, f)
+		if !open {
+			mylog.Error("!open")
+			return
+		}
+		content.AddChild(dockable)
+		//content.AddChild(CreatTable())  
+	}()
+
 	content.AddChild(filter.CreateFilter())
 	content.AddChild(bodyView.CreateBodyView())
 	return true
