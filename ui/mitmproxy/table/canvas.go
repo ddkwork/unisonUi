@@ -7,6 +7,7 @@ import (
 	"github.com/ddkwork/unisonUi/ui/mitmproxy/menus"
 	"github.com/ddkwork/unisonUi/ui/mitmproxy/toolbar"
 	"github.com/google/uuid"
+	"github.com/richardwilkes/gcs/v5/ux"
 	"github.com/richardwilkes/unison"
 	"sync"
 )
@@ -47,7 +48,22 @@ func CanvasObject(w *unison.Window) (ok bool) {
 	content := w.Content()
 	content.SetLayout(&unison.FlexLayout{Columns: 1})
 	content.AddChild(toolbar.CreateToolBar())
-	content.AddChild(CreatTable()) //todo set high
+	ux.RegisterKnownFileTypes()
+	//model.GlobalSettings()
+	ux.NewWorkspace(w)
+	//OpenFiles(files)
+	f := "C:\\Users\\Admin\\GCS\\User Library\\Steward.gct"
+	f = "Steward.gct"
+	//var dock unison.Dockable
+	//ux.DisplayNewDockable(w,dock)
+	//ux.OpenFiles([]string{f})
+	dockable, open := ux.OpenFile(w, f)
+	if !open {
+		return
+	}
+	//unison.OpenFilesCallback(ux.OpenFiles)
+	content.AddChild(dockable) //todo set high
+	//content.AddChild(CreatTable()) //todo set high
 	content.AddChild(filter.CreateFilter())
 	content.AddChild(bodyView.CreateBodyView())
 	return true
