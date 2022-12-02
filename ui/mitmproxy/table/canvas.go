@@ -18,19 +18,19 @@ type (
 		CanvasObject(where unison.Point) (ok bool)
 		Mitmproxy() (ok bool) //for test in main
 		unison.TableRowData[*object]
-		Table() *unison.Table[*object]
+		//Table() *unison.Table[*object]
 		Header() []string
 	}
 	object struct {
 		packets.Object //set col style
 		packets        []packets.Object
-		table          *unison.Table[*object]
-		parent         *object
-		id             uuid.UUID
-		treeIdOrSub    string
-		tips           string
-		root           []*object
-		branch         []*object
+		//table          *unison.Table[*object]
+		parent      *object
+		id          uuid.UUID
+		treeIdOrSub string
+		tips        string
+		root        []*object
+		branch      []*object
 		//webSocket      []*object
 		//tcp            []*object
 		//udp            []*object
