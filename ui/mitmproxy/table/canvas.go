@@ -4,7 +4,6 @@ import (
 	"github.com/ddkwork/golibrary/mylog"
 	"github.com/ddkwork/unisonUi/packets"
 	"github.com/ddkwork/unisonUi/ui/mitmproxy/bodyView"
-	"github.com/ddkwork/unisonUi/ui/mitmproxy/bodyView/filter"
 	"github.com/ddkwork/unisonUi/ui/mitmproxy/menus"
 	"github.com/ddkwork/unisonUi/ui/mitmproxy/toolbar"
 	"github.com/ddkwork/unisonUi/ui/mitmproxy/ux"
@@ -54,8 +53,15 @@ func CanvasObject(w *unison.Window) (ok bool) {
 	if !mylog.Error(err) {
 		return
 	}
+	noteTableDockableFromFile.AsPanel().SetBorder(
+		unison.NewEmptyBorder(unison.Insets{
+			Top:    0,
+			Left:   0,
+			Bottom: 200,
+			Right:  0,
+		}),
+	)
 	content.AddChild(noteTableDockableFromFile)
-	content.AddChild(filter.CreateFilter())
 	content.AddChild(bodyView.CreateBodyView())
 	return true
 }

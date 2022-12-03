@@ -71,12 +71,14 @@ func CreatTable() *unison.Panel {
 	//	HGrab:  true,
 	//	VGrab:  true,
 	//})
-	scrollArea.SetBorder(unison.NewEmptyBorder(unison.Insets{
-		Top:    0,
-		Left:   0,
-		Bottom: 200,
-		Right:  0,
-	}))
+	scrollArea.SetBorder(
+		unison.NewEmptyBorder(unison.Insets{
+			Top:    0,
+			Left:   0,
+			Bottom: 200,
+			Right:  0,
+		}),
+	)
 	//scrollArea.SetBorder(unison.NewCompoundBorder(unison.NewLineBorder(
 	//	unison.DividerColor, 0, unison.Insets{Bottom: 1},
 	//	false), unison.NewEmptyBorder(unison.StdInsets())))
