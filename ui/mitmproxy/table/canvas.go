@@ -7,8 +7,9 @@ import (
 	"github.com/ddkwork/unisonUi/ui/mitmproxy/bodyView/filter"
 	"github.com/ddkwork/unisonUi/ui/mitmproxy/menus"
 	"github.com/ddkwork/unisonUi/ui/mitmproxy/toolbar"
+	"github.com/ddkwork/unisonUi/ui/mitmproxy/ux"
 	"github.com/google/uuid"
-	"github.com/richardwilkes/gcs/v5/ux"
+	//"github.com/richardwilkes/gcs/v5/ux"
 	"github.com/richardwilkes/unison"
 	"sync"
 )
