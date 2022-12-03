@@ -49,37 +49,38 @@ func CanvasObject(w *unison.Window) (ok bool) {
 	content.SetLayout(&unison.FlexLayout{Columns: 1})
 	content.AddChild(toolbar.CreateToolBar())
 	n := "Thaumatology - RPM Advantage Modifiers.adm"
+	n = "Template Toolkit 2 - Races Advantage Modifiers.adm"
 	noteTableDockableFromFile, err := ux.NewTraitModifierTableDockableFromFile(n)
 	if !mylog.Error(err) {
 		return
 	}
-	var scrollArea = unison.NewScrollPanel()
-	scrollArea.SetBorder(
-		unison.NewEmptyBorder(unison.Insets{
-			Top:    0,
-			Left:   0,
-			Bottom: 200,
-			Right:  0,
-		}),
-	)
-	scrollArea.Sync() //todo bug: add scrollArea late the Table is not show
-	scrollArea.MarkForLayoutAndRedraw()
-	scrollArea.SetLayout(&unison.FlexLayout{
-		Columns:  1,
-		VSpacing: unison.StdVSpacing,
-	})
+	//var scrollArea = unison.NewScrollPanel()
+	//scrollArea.SetBorder(
+	//	unison.NewEmptyBorder(unison.Insets{
+	//		Top:    0,
+	//		Left:   0,
+	//		Bottom: 600,
+	//		Right:  0,
+	//	}),
+	//)
+	//scrollArea.Sync() //todo bug: add scrollArea late the Table is not show
+	//scrollArea.MarkForLayoutAndRedraw()
+	//scrollArea.SetLayout(&unison.FlexLayout{
+	//	Columns:  1,
+	//	VSpacing: unison.StdVSpacing,
+	//})
 	//table.ColumnSizes[0].Minimum = 20
 	//	o.mitmMock()
 	//const topLevelRowsToMake = 10
 	//table.HierarchyColumnIndex = 1
-	scrollArea.SetContent(noteTableDockableFromFile, unison.FillBehavior, unison.FillBehavior)
-	scrollArea.SetLayoutData(&unison.FlexLayoutData{
-		HAlign: unison.FillAlignment,
-		VAlign: unison.FillAlignment,
-		HGrab:  true,
-		VGrab:  true,
-	})
-	content.AddChild(scrollArea)
+	//scrollArea.SetContent(noteTableDockableFromFile, unison.FillBehavior, unison.FillBehavior)
+	//scrollArea.SetLayoutData(&unison.FlexLayoutData{
+	//	HAlign: unison.FillAlignment,
+	//	VAlign: unison.FillAlignment,
+	//	HGrab:  true,
+	//	VGrab:  true,
+	//})
+	content.AddChild(noteTableDockableFromFile)
 	content.AddChild(bodyView.CreateBodyView())
 	return true
 }
