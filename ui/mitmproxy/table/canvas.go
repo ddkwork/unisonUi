@@ -53,7 +53,10 @@ func CanvasObject(w *unison.Window) (ok bool) {
 	if !mylog.Error(err) {
 		return
 	}
-	noteTableDockableFromFile.AsPanel().SetBorder(
+	content.AddChild(noteTableDockableFromFile)
+
+	createBodyView := bodyView.CreateBodyView()
+	createBodyView.AsPanel().SetBorder(
 		unison.NewEmptyBorder(unison.Insets{
 			Top:    0,
 			Left:   0,
@@ -61,7 +64,6 @@ func CanvasObject(w *unison.Window) (ok bool) {
 			Right:  0,
 		}),
 	)
-	content.AddChild(noteTableDockableFromFile)
-	content.AddChild(bodyView.CreateBodyView())
+	content.AddChild(createBodyView)
 	return true
 }
