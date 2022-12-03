@@ -53,7 +53,32 @@ func CanvasObject(w *unison.Window) (ok bool) {
 	if !mylog.Error(err) {
 		return
 	}
-	content.AddChild(noteTableDockableFromFile)
+
+	var scrollArea = unison.NewScrollPanel()
+	scrollArea.SetBorder(
+		unison.NewEmptyBorder(unison.Insets{
+			Top:    0,
+			Left:   0,
+			Bottom: 200,
+			Right:  0,
+		}),
+	)
+	scrollArea.SetLayout(&unison.FlexLayout{
+		Columns:  1,
+		VSpacing: unison.StdVSpacing,
+	})
+	//table.ColumnSizes[0].Minimum = 20
+	//	o.mitmMock()
+	//const topLevelRowsToMake = 10
+	//table.HierarchyColumnIndex = 1
+	scrollArea.SetContent(noteTableDockableFromFile, unison.FillBehavior, unison.FillBehavior)
+	scrollArea.SetLayoutData(&unison.FlexLayoutData{
+		HAlign: unison.FillAlignment,
+		VAlign: unison.FillAlignment,
+		HGrab:  true,
+		VGrab:  true,
+	})
+	content.AddChild(scrollArea)
 	createBodyView := bodyView.CreateBodyView()
 	createBodyView.AsPanel().SetBorder(
 		unison.NewEmptyBorder(unison.Insets{
