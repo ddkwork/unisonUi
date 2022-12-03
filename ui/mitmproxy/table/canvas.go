@@ -79,15 +79,6 @@ func CanvasObject(w *unison.Window) (ok bool) {
 		VGrab:  true,
 	})
 	content.AddChild(scrollArea)
-	createBodyView := bodyView.CreateBodyView()
-	createBodyView.AsPanel().SetBorder(
-		unison.NewEmptyBorder(unison.Insets{
-			Top:    200,
-			Left:   0,
-			Bottom: 0,
-			Right:  0,
-		}),
-	)
-	content.AddChild(createBodyView)
+	content.AddChild(bodyView.CreateBodyView())
 	return true
 }
