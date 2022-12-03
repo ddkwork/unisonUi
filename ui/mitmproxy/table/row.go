@@ -60,17 +60,9 @@ func (o *object) AddRow(packet packets.Object) {
 		o.root = append(o.root, o.branch...)
 	}
 	o.packets = append(o.packets, packet)
-
-	//o.table.SetRootRows(o.root)
-	//o.Table().SyncToModel()
-	//o.Table().SizeColumnsToFit(true)
-	//o.Table().InstallDragSupport(nil, "object", "Row", "Column")
-	//unison.InstallDropSupport[*object, any](o.Table(), "object", func(from, to *unison.Table[*object]) bool { return from == to }, nil, nil)
-
 	time.Sleep(time.Second)
 }
 
-// func (o *object) Table() *unison.Table[*object] { return o.table }
 func (o *object) Header() []string {
 	return []string{
 		//checkBox todo add checkBox
