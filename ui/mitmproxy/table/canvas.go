@@ -62,6 +62,8 @@ func CanvasObject(w *unison.Window) (ok bool) {
 			Right:  0,
 		}),
 	)
+	scrollArea.Sync() //todo bug: add scrollArea late the Table is not show
+	scrollArea.MarkForLayoutAndRedraw()
 	scrollArea.SetLayout(&unison.FlexLayout{
 		Columns:  1,
 		VSpacing: unison.StdVSpacing,
