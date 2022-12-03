@@ -53,7 +53,6 @@ func CanvasObject(w *unison.Window) (ok bool) {
 	if !mylog.Error(err) {
 		return
 	}
-
 	var scrollArea = unison.NewScrollPanel()
 	scrollArea.SetBorder(
 		unison.NewEmptyBorder(unison.Insets{
