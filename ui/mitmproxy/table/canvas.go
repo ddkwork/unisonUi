@@ -58,9 +58,9 @@ func CanvasObject(w *unison.Window) (ok bool) {
 	createBodyView := bodyView.CreateBodyView()
 	createBodyView.AsPanel().SetBorder(
 		unison.NewEmptyBorder(unison.Insets{
-			Top:    0,
+			Top:    200,
 			Left:   0,
-			Bottom: 200,
+			Bottom: 0,
 			Right:  0,
 		}),
 	)
