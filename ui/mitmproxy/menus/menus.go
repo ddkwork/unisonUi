@@ -1,8 +1,8 @@
 package menus
 
 import (
+	"github.com/ddkwork/golibrary/skiaLib/widget"
 	"github.com/ddkwork/unisonUi/ui/mitmproxy/about"
-	"github.com/ddkwork/unisonUi/widget"
 	"github.com/richardwilkes/unison"
 )
 
