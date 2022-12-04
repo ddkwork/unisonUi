@@ -47,7 +47,7 @@ func CanvasObject(w *unison.Window) (ok bool) {
 	menus.New(w)
 	content := w.Content()
 	content.SetLayout(&unison.FlexLayout{Columns: 1})
-	content.AddChild(toolbar.CreateToolBar())
+	content.AddChild(toolbar.New().CanvasObject(w))
 	n := "Thaumatology - RPM Advantage Modifiers.adm"
 	n = "Template Toolkit 2 - Races Advantage Modifiers.adm"
 	noteTableDockableFromFile, err := ux.NewTraitModifierTableDockableFromFile(n)
