@@ -44,6 +44,7 @@ type (
 
 func New() *object { return &object{} }
 func CanvasObject(w *unison.Window) (ok bool) {
+	//	o.mitmMock()
 	menus.New(w)
 	content := w.Content()
 	content.SetLayout(&unison.FlexLayout{Columns: 1})
@@ -54,33 +55,25 @@ func CanvasObject(w *unison.Window) (ok bool) {
 	if !mylog.Error(err) {
 		return
 	}
-	//var scrollArea = unison.NewScrollPanel()
-	//scrollArea.SetBorder(
-	//	unison.NewEmptyBorder(unison.Insets{
-	//		Top:    0,
-	//		Left:   0,
-	//		Bottom: 600,
-	//		Right:  0,
-	//	}),
-	//)
-	//scrollArea.Sync() //todo bug: add scrollArea late the Table is not show
-	//scrollArea.MarkForLayoutAndRedraw()
-	//scrollArea.SetLayout(&unison.FlexLayout{
-	//	Columns:  1,
-	//	VSpacing: unison.StdVSpacing,
-	//})
-	//table.ColumnSizes[0].Minimum = 20
-	//	o.mitmMock()
-	//const topLevelRowsToMake = 10
-	//table.HierarchyColumnIndex = 1
-	//scrollArea.SetContent(noteTableDockableFromFile, unison.FillBehavior, unison.FillBehavior)
-	//scrollArea.SetLayoutData(&unison.FlexLayoutData{
-	//	HAlign: unison.FillAlignment,
-	//	VAlign: unison.FillAlignment,
-	//	HGrab:  true,
-	//	VGrab:  true,
-	//})
+	//hello you, the Panel SetSizer and SetBorder is not working when table branch opened
+	//how to fix this Panel
+	//when table branch opened,the Child Panel not show
+
+	noteTableDockableFromFile.AsPanel().SetSizer(func(_ unison.Size) (min, pref, max unison.Size) {
+		pref.Width = 1000
+		pref.Height = 400
+		return min, pref, unison.NewSize(1000, 400)
+	})
+	noteTableDockableFromFile.AsPanel().SetBorder(
+		unison.NewEmptyBorder(unison.Insets{
+			Top:    0,
+			Left:   0,
+			Bottom: 0,
+			Right:  0,
+		}),
+	)
 	content.AddChild(noteTableDockableFromFile)
 	content.AddChild(bodyView.CreateBodyView())
+
 	return true
 }
