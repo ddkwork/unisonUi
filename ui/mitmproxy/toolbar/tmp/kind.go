@@ -14,94 +14,94 @@ var name kind = 0
 
 const (
 	invalidKind kind = iota
-	cleanerKind
+	resourceCssIconKind
+	resourceExecutableIconKind
 	resourceFlashIconKind
+	rootCaKind
+	settingKind
+	aboutKind
 	resourceJsIconKind
 	resourceNotModifiedIconKind
-	resourceRedirectIconKind
+	resourcePlainIconKind
+	resourceDocumentIconKind
+	resourceWebSocketIconKind
 	submit7Kind
-	replayKind
-	resourceImageIconKind
-	ssl2Kind
-	ssl5Kind
-	ssl6Kind
-	aboutKind
 	recKind
 	resourceDnsIconKind
-	resourcePlainIconKind
-	ssl4Kind
-	vpnKind
 	resourceJavaIconKind
-	editKind
-	resourceDocumentIconKind
-	settingKind
-	mitmKind
-	resourceCssIconKind
-	resourceWebSocketIconKind
-	rootCaKind
 	ssl3Kind
-	resourceExecutableIconKind
+	ssl5Kind
+	ssl6Kind
+	vpnKind
+	resourceImageIconKind
+	ssl4Kind
 	resourceTcpIconKind
+	cleanerKind
+	mitmKind
+	resourceRedirectIconKind
+	editKind
+	replayKind
+	ssl2Kind
 )
 
 func (k kind) String() string {
 	switch k {
-	case cleanerKind:
-		return "cleanerKind"
-	case resourceFlashIconKind:
-		return "resourceFlashIconKind"
+	case rootCaKind:
+		return "rootCaKind"
+	case settingKind:
+		return "settingKind"
+	case aboutKind:
+		return "aboutKind"
 	case resourceJsIconKind:
 		return "resourceJsIconKind"
 	case resourceNotModifiedIconKind:
 		return "resourceNotModifiedIconKind"
-	case resourceRedirectIconKind:
-		return "resourceRedirectIconKind"
+	case resourcePlainIconKind:
+		return "resourcePlainIconKind"
+	case resourceDocumentIconKind:
+		return "resourceDocumentIconKind"
+	case resourceWebSocketIconKind:
+		return "resourceWebSocketIconKind"
 	case submit7Kind:
 		return "submit7Kind"
-	case replayKind:
-		return "replayKind"
-	case resourceImageIconKind:
-		return "resourceImageIconKind"
-	case ssl2Kind:
-		return "ssl2Kind"
-	case ssl5Kind:
-		return "ssl5Kind"
-	case ssl6Kind:
-		return "ssl6Kind"
-	case aboutKind:
-		return "aboutKind"
+	case vpnKind:
+		return "vpnKind"
 	case recKind:
 		return "recKind"
 	case resourceDnsIconKind:
 		return "resourceDnsIconKind"
-	case resourcePlainIconKind:
-		return "resourcePlainIconKind"
-	case ssl4Kind:
-		return "ssl4Kind"
-	case vpnKind:
-		return "vpnKind"
 	case resourceJavaIconKind:
 		return "resourceJavaIconKind"
-	case editKind:
-		return "editKind"
-	case resourceDocumentIconKind:
-		return "resourceDocumentIconKind"
-	case settingKind:
-		return "settingKind"
-	case mitmKind:
-		return "mitmKind"
-	case resourceCssIconKind:
-		return "resourceCssIconKind"
-	case resourceWebSocketIconKind:
-		return "resourceWebSocketIconKind"
-	case rootCaKind:
-		return "rootCaKind"
 	case ssl3Kind:
 		return "ssl3Kind"
-	case resourceExecutableIconKind:
-		return "resourceExecutableIconKind"
+	case ssl5Kind:
+		return "ssl5Kind"
+	case ssl6Kind:
+		return "ssl6Kind"
+	case resourceImageIconKind:
+		return "resourceImageIconKind"
+	case ssl4Kind:
+		return "ssl4Kind"
+	case resourceRedirectIconKind:
+		return "resourceRedirectIconKind"
 	case resourceTcpIconKind:
 		return "resourceTcpIconKind"
+	case cleanerKind:
+		return "cleanerKind"
+	case mitmKind:
+		return "mitmKind"
+	case editKind:
+		return "editKind"
+	case replayKind:
+		return "replayKind"
+	case ssl2Kind:
+		return "ssl2Kind"
+	case resourceCssIconKind:
+		return "resourceCssIconKind"
+	case resourceExecutableIconKind:
+		return "resourceExecutableIconKind"
+	case resourceFlashIconKind:
+		return "resourceFlashIconKind"
 
 	}
 	return "invalid bmp kind"
@@ -109,150 +109,150 @@ func (k kind) String() string {
 
 func (k kind) Image() *unison.Image {
 	switch k {
-	case ssl3Kind:
-		return widget.MustImage(pngSsl3)
-	case mitmKind:
-		return widget.MustImage(pngMitm)
-	case resourceCssIconKind:
-		return widget.MustImage(pngResourceCssIcon)
-	case resourceWebSocketIconKind:
-		return widget.MustImage(pngResourceWebSocketIcon)
-	case rootCaKind:
-		return widget.MustImage(pngRootCa)
-	case resourceExecutableIconKind:
-		return widget.MustImage(pngResourceExecutableIcon)
-	case resourceTcpIconKind:
-		return widget.MustImage(pngResourceTcpIcon)
-	case resourceRedirectIconKind:
-		return widget.MustImage(pngResourceRedirectIcon)
-	case submit7Kind:
-		return widget.MustImage(pngSubmit7)
-	case cleanerKind:
-		return widget.MustImage(pngCleaner)
-	case resourceFlashIconKind:
-		return widget.MustImage(pngResourceFlashIcon)
-	case resourceJsIconKind:
-		return widget.MustImage(pngResourceJsIcon)
-	case resourceNotModifiedIconKind:
-		return widget.MustImage(pngResourceNotModifiedIcon)
-	case ssl6Kind:
-		return widget.MustImage(pngSsl6)
-	case replayKind:
-		return widget.MustImage(pngReplay)
 	case resourceImageIconKind:
-		return widget.MustImage(pngResourceImageIcon)
-	case ssl2Kind:
-		return widget.MustImage(pngSsl2)
-	case ssl5Kind:
-		return widget.MustImage(pngSsl5)
+		return widget.MustImage(PngResourceImageIcon)
 	case ssl4Kind:
-		return widget.MustImage(pngSsl4)
-	case vpnKind:
-		return widget.MustImage(pngVpn)
-	case aboutKind:
-		return widget.MustImage(pngAbout)
-	case recKind:
-		return widget.MustImage(pngRec)
-	case resourceDnsIconKind:
-		return widget.MustImage(pngResourceDnsIcon)
-	case resourcePlainIconKind:
-		return widget.MustImage(pngResourcePlainIcon)
-	case resourceJavaIconKind:
-		return widget.MustImage(pngResourceJavaIcon)
+		return widget.MustImage(PngSsl4)
+	case resourceRedirectIconKind:
+		return widget.MustImage(PngResourceRedirectIcon)
+	case resourceTcpIconKind:
+		return widget.MustImage(PngResourceTcpIcon)
+	case cleanerKind:
+		return widget.MustImage(PngCleaner)
+	case mitmKind:
+		return widget.MustImage(PngMitm)
 	case editKind:
-		return widget.MustImage(pngEdit)
-	case resourceDocumentIconKind:
-		return widget.MustImage(pngResourceDocumentIcon)
+		return widget.MustImage(PngEdit)
+	case replayKind:
+		return widget.MustImage(PngReplay)
+	case ssl2Kind:
+		return widget.MustImage(PngSsl2)
+	case resourceCssIconKind:
+		return widget.MustImage(PngResourceCssIcon)
+	case resourceExecutableIconKind:
+		return widget.MustImage(PngResourceExecutableIcon)
+	case resourceFlashIconKind:
+		return widget.MustImage(PngResourceFlashIcon)
+	case rootCaKind:
+		return widget.MustImage(PngRootCa)
 	case settingKind:
-		return widget.MustImage(pngSetting)
+		return widget.MustImage(PngSetting)
+	case resourcePlainIconKind:
+		return widget.MustImage(PngResourcePlainIcon)
+	case aboutKind:
+		return widget.MustImage(PngAbout)
+	case resourceJsIconKind:
+		return widget.MustImage(PngResourceJsIcon)
+	case resourceNotModifiedIconKind:
+		return widget.MustImage(PngResourceNotModifiedIcon)
+	case resourceDocumentIconKind:
+		return widget.MustImage(PngResourceDocumentIcon)
+	case resourceWebSocketIconKind:
+		return widget.MustImage(PngResourceWebSocketIcon)
+	case submit7Kind:
+		return widget.MustImage(PngSubmit7)
+	case ssl6Kind:
+		return widget.MustImage(PngSsl6)
+	case vpnKind:
+		return widget.MustImage(PngVpn)
+	case recKind:
+		return widget.MustImage(PngRec)
+	case resourceDnsIconKind:
+		return widget.MustImage(PngResourceDnsIcon)
+	case resourceJavaIconKind:
+		return widget.MustImage(PngResourceJavaIcon)
+	case ssl3Kind:
+		return widget.MustImage(PngSsl3)
+	case ssl5Kind:
+		return widget.MustImage(PngSsl5)
 
 	}
 	return nil
 }
 
 var (
-	//go:embed asserts/resourceFlashIcon.ico
-	pngResourceFlashIcon []byte
-
-	//go:embed asserts/resourceJSIcon.ico
-	pngResourceJsIcon []byte
-
-	//go:embed asserts/resourceNotModifiedIcon.ico
-	pngResourceNotModifiedIcon []byte
-
-	//go:embed asserts/resourceRedirectIcon.ico
-	pngResourceRedirectIcon []byte
-
-	//go:embed asserts/submit7.ico
-	pngSubmit7 []byte
-
-	//go:embed asserts/cleaner.ico
-	pngCleaner []byte
-
-	//go:embed asserts/resourceImageIcon.ico
-	pngResourceImageIcon []byte
-
-	//go:embed asserts/ssl2.ico
-	pngSsl2 []byte
-
-	//go:embed asserts/ssl5.ico
-	pngSsl5 []byte
-
 	//go:embed asserts/ssl6.ico
-	pngSsl6 []byte
-
-	//go:embed asserts/replay.ico
-	pngReplay []byte
-
-	//go:embed asserts/rec.ico
-	pngRec []byte
-
-	//go:embed asserts/resourceDnsIcon.ico
-	pngResourceDnsIcon []byte
-
-	//go:embed asserts/resourcePlainIcon.ico
-	pngResourcePlainIcon []byte
-
-	//go:embed asserts/ssl4.ico
-	pngSsl4 []byte
+	PngSsl6 []byte
 
 	//go:embed asserts/vpn.ico
-	pngVpn []byte
+	PngVpn []byte
 
-	//go:embed asserts/about.ico
-	pngAbout []byte
+	//go:embed asserts/rec.ico
+	PngRec []byte
+
+	//go:embed asserts/resourceDnsIcon.ico
+	PngResourceDnsIcon []byte
 
 	//go:embed asserts/resourceJavaIcon.ico
-	pngResourceJavaIcon []byte
-
-	//go:embed asserts/resourceDocumentIcon.ico
-	pngResourceDocumentIcon []byte
-
-	//go:embed asserts/setting.ico
-	pngSetting []byte
-
-	//go:embed asserts/edit.ico
-	pngEdit []byte
-
-	//go:embed asserts/resourceCSSIcon.ico
-	pngResourceCssIcon []byte
-
-	//go:embed asserts/resourceWebSocketIcon.ico
-	pngResourceWebSocketIcon []byte
-
-	//go:embed asserts/rootCA.ico
-	pngRootCa []byte
+	PngResourceJavaIcon []byte
 
 	//go:embed asserts/ssl3.ico
-	pngSsl3 []byte
+	PngSsl3 []byte
 
-	//go:embed asserts/mitm.ico
-	pngMitm []byte
+	//go:embed asserts/ssl5.ico
+	PngSsl5 []byte
+
+	//go:embed asserts/resourceImageIcon.ico
+	PngResourceImageIcon []byte
+
+	//go:embed asserts/ssl4.ico
+	PngSsl4 []byte
+
+	//go:embed asserts/resourceRedirectIcon.ico
+	PngResourceRedirectIcon []byte
 
 	//go:embed asserts/resourceTcpIcon.ico
-	pngResourceTcpIcon []byte
+	PngResourceTcpIcon []byte
+
+	//go:embed asserts/cleaner.ico
+	PngCleaner []byte
+
+	//go:embed asserts/mitm.ico
+	PngMitm []byte
+
+	//go:embed asserts/edit.ico
+	PngEdit []byte
+
+	//go:embed asserts/replay.ico
+	PngReplay []byte
+
+	//go:embed asserts/ssl2.ico
+	PngSsl2 []byte
+
+	//go:embed asserts/resourceCSSIcon.ico
+	PngResourceCssIcon []byte
 
 	//go:embed asserts/resourceExecutableIcon.ico
-	pngResourceExecutableIcon []byte
+	PngResourceExecutableIcon []byte
+
+	//go:embed asserts/resourceFlashIcon.ico
+	PngResourceFlashIcon []byte
+
+	//go:embed asserts/rootCA.ico
+	PngRootCa []byte
+
+	//go:embed asserts/setting.ico
+	PngSetting []byte
+
+	//go:embed asserts/resourcePlainIcon.ico
+	PngResourcePlainIcon []byte
+
+	//go:embed asserts/about.ico
+	PngAbout []byte
+
+	//go:embed asserts/resourceJSIcon.ico
+	PngResourceJsIcon []byte
+
+	//go:embed asserts/resourceNotModifiedIcon.ico
+	PngResourceNotModifiedIcon []byte
+
+	//go:embed asserts/resourceDocumentIcon.ico
+	PngResourceDocumentIcon []byte
+
+	//go:embed asserts/resourceWebSocketIcon.ico
+	PngResourceWebSocketIcon []byte
+
+	//go:embed asserts/submit7.ico
+	PngSubmit7 []byte
 )
 

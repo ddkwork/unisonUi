@@ -30,7 +30,7 @@ func TestGen(t *testing.T) {
 			mapPather[path] = pather.New(pather.Input{
 				LowerFileName: lower,
 				UpperFileName: upper,
-				EmbedPrefix:   "png",
+				EmbedPrefix:   "Png",
 				ObjectSuffix:  "Button ",
 				Path:          path,
 			})
