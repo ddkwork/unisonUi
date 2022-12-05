@@ -91,6 +91,12 @@ func NewTableDockable[T model.NodeTypes](filePath, extension string, provider Ta
 		VGrab:  true,
 	})
 
+	d.table.SetSizer(func(_ unison.Size) (min, pref, max unison.Size) {
+		pref.Width = 1300 //todo set it = window.Width ? how to do ? scroll not show ? why ?
+		pref.Height = 270
+		return min, pref, max
+	})
+
 	d.AddChild(d.createToolbar())
 	d.AddChild(d.scroll)
 
