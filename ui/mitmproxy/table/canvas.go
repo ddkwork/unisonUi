@@ -57,6 +57,5 @@ func CanvasObject(w *unison.Window) (ok bool) {
 	}
 	content.AddChild(noteTableDockableFromFile)
 	content.AddChild(bodyView.CreateBodyView())
-
 	return true
 }
