@@ -6,11 +6,18 @@ import (
 	"github.com/richardwilkes/unison"
 )
 
+//todo add interface
+
 func CreateBodyView() *unison.Dock { //todo move all to BottomSide
 	var dock = unison.NewDock()
 	yellow := tabbar.New(packets.NameBodyKind.HttpDump(), "Request", unison.Yellow)
 	dock.DockTo(yellow, nil, unison.BottomSide)
-	unison.Ancestor[*unison.DockContainer](yellow).Stack(tabbar.New(packets.NameBodyKind.HexDump(), "", unison.Yellow), -1)
+
+	HexDump := tabbar.New(packets.NameBodyKind.HexDump(), "", unison.Yellow)
+	HexDumpPanel := HexDump.AsPanel()
+	HexDumpPanel.AddChild(unison.NewButton()) //todo test show HexDump ctx, not passed
+
+	unison.Ancestor[*unison.DockContainer](yellow).Stack(HexDump, -1)
 	unison.Ancestor[*unison.DockContainer](yellow).Stack(tabbar.New(packets.NameBodyKind.Steam(), "", unison.Yellow), -1)
 	unison.Ancestor[*unison.DockContainer](yellow).Stack(tabbar.New(packets.NameBodyKind.ProtoBuf(), "", unison.Yellow), -1)
 	unison.Ancestor[*unison.DockContainer](yellow).Stack(tabbar.New(packets.NameBodyKind.Tdf(), "", unison.Yellow), -1)
