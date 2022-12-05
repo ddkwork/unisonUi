@@ -55,23 +55,6 @@ func CanvasObject(w *unison.Window) (ok bool) {
 	if !mylog.Error(err) {
 		return
 	}
-	//hello you, the Panel SetSizer and SetBorder is not working when table branch opened
-	//how to fix this Panel
-	//when table branch opened,the Child Panel not show
-
-	noteTableDockableFromFile.AsPanel().SetSizer(func(_ unison.Size) (min, pref, max unison.Size) {
-		pref.Width = 1000
-		pref.Height = 400
-		return min, pref, unison.NewSize(1000, 400)
-	})
-	noteTableDockableFromFile.AsPanel().SetBorder(
-		unison.NewEmptyBorder(unison.Insets{
-			Top:    0,
-			Left:   0,
-			Bottom: 0,
-			Right:  0,
-		}),
-	)
 	content.AddChild(noteTableDockableFromFile)
 	content.AddChild(bodyView.CreateBodyView())
 
