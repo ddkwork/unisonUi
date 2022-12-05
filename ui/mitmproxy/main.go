@@ -14,6 +14,7 @@ func main() {
 	unison.AttachConsole()
 	unison.Start(unison.StartupFinishedCallback(func() {
 		w, err := unison.NewWindow(fmt.Sprintf("mitmproxy"))
+		//todo full screen
 		if err != nil {
 			return
 		}
