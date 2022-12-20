@@ -56,6 +56,7 @@ const (
 	DuplicateItemID
 	ClearPortraitItemID
 	ConvertToContainerItemID
+	ConvertToNonContainerItemID
 	ToggleStateItemID
 	IncrementItemID
 	DecrementItemID
@@ -91,6 +92,7 @@ const (
 	UpdateAppStatusItemID
 	CheckForAppUpdatesItemID
 	ReleaseNotesItemID
+	LicenseItemID
 	WebSiteItemID
 	MailingListItemID
 	ViewMenuID
@@ -178,6 +180,7 @@ func (s menuBarScope) setupFileMenu(bar unison.Menu) {
 	m := bar.Menu(unison.FileMenuID)
 	i := s.insertMenuItem(m, 0, newCharacterSheetAction.NewMenuItem(f))
 	i = s.insertMenuItem(m, i, newCharacterTemplateAction.NewMenuItem(f))
+	i = s.insertMenuItem(m, i, newMarkdownFileAction.NewMenuItem(f))
 
 	i = s.insertMenuSeparator(m, i)
 	i = s.insertMenuItem(m, i, newTraitsLibraryAction.NewMenuItem(f))
@@ -187,9 +190,6 @@ func (s menuBarScope) setupFileMenu(bar unison.Menu) {
 	i = s.insertMenuItem(m, i, newEquipmentLibraryAction.NewMenuItem(f))
 	i = s.insertMenuItem(m, i, newEquipmentModifiersLibraryAction.NewMenuItem(f))
 	i = s.insertMenuItem(m, i, newNotesLibraryAction.NewMenuItem(f))
-
-	i = s.insertMenuSeparator(m, i)
-	i = s.insertMenuItem(m, i, newMarkdownFileAction.NewMenuItem(f))
 
 	i = s.insertMenuSeparator(m, i)
 	i = s.insertMenuItem(m, i, openAction.NewMenuItem(f))
@@ -241,7 +241,8 @@ func (s menuBarScope) setupEditMenu(bar unison.Menu) {
 	i = s.insertMenuSeparator(m, i)
 	i = s.insertMenuItem(m, i, toggleStateAction.NewMenuItem(f))
 	i = s.insertMenuItem(m, i, swapDefaultsAction.NewMenuItem(f))
-	s.insertMenuItem(m, i, convertToContainerAction.NewMenuItem(f))
+	i = s.insertMenuItem(m, i, convertToContainerAction.NewMenuItem(f))
+	s.insertMenuItem(m, i, convertToNonContainerAction.NewMenuItem(f))
 }
 
 func (s menuBarScope) createItemMenu(f unison.MenuFactory) unison.Menu {
@@ -476,6 +477,7 @@ var DefaultContextMenuItems = []ContextMenuItem{
 	{i18n.Text("Toggle State"), ToggleStateItemID},
 	{i18n.Text("Swap Defaults"), SwapDefaultsItemID},
 	{i18n.Text("Convert to Container"), ConvertToContainerItemID},
+	{i18n.Text("Convert to Non-Container"), ConvertToNonContainerItemID},
 	{"", -1},
 	{i18n.Text("Open Page Reference"), OpenOnePageReferenceItemID},
 	{i18n.Text("Open Each Page Reference"), OpenEachPageReferenceItemID},

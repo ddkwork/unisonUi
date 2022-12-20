@@ -12,6 +12,7 @@
 package ux
 
 import (
+	_ "embed"
 	"fmt"
 	"path/filepath"
 
@@ -25,6 +26,9 @@ import (
 // WebSiteDomain holds the web site domain for GCS.
 const WebSiteDomain = "gurpscharactersheet.com"
 
+//go:embed license.md
+var licenseMarkdownContent string
+
 // These actions are registered for key bindings.
 var (
 	addNaturalAttacksAction             *unison.Action
@@ -33,6 +37,7 @@ var (
 	closeTabAction                      *unison.Action
 	colorSettingsAction                 *unison.Action
 	convertToContainerAction            *unison.Action
+	convertToNonContainerAction         *unison.Action
 	copyToSheetAction                   *unison.Action
 	copyToTemplateAction                *unison.Action
 	decreaseSkillLevelAction            *unison.Action
@@ -195,6 +200,12 @@ func registerActions() {
 	convertToContainerAction = registerKeyBindableAction("convert.to_container", &unison.Action{
 		ID:              ConvertToContainerItemID,
 		Title:           i18n.Text("Convert to Container"),
+		EnabledCallback: unison.RouteActionToFocusEnabledFunc,
+		ExecuteCallback: unison.RouteActionToFocusExecuteFunc,
+	})
+	convertToNonContainerAction = registerKeyBindableAction("convert.to_non_container", &unison.Action{
+		ID:              ConvertToNonContainerItemID,
+		Title:           i18n.Text("Convert to Non-Container"),
 		EnabledCallback: unison.RouteActionToFocusEnabledFunc,
 		ExecuteCallback: unison.RouteActionToFocusExecuteFunc,
 	})
@@ -805,10 +816,10 @@ func registerActions() {
 		},
 	}
 	licenseAction = &unison.Action{
-		ID:    ReleaseNotesItemID,
+		ID:    LicenseItemID,
 		Title: i18n.Text("License"),
 		ExecuteCallback: func(_ *unison.Action, _ any) {
-			showWebPage("https://github.com/richardwilkes/gcs/blob/master/LICENSE")
+			ShowReadOnlyMarkdown(i18n.Text("License"), licenseMarkdownContent)
 		},
 	}
 	mailingListAction = &unison.Action{

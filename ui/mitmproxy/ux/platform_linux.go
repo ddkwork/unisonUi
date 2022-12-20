@@ -102,7 +102,7 @@ func installDesktopIcons() error {
 	for i := range model.KnownFileTypes {
 		if fi := &model.KnownFileTypes[i]; fi.IsGCSData {
 			var overlay image.Image
-			overlay, err = CreateImageFromSVG(fi, 128)
+			overlay, err = model.CreateImageFromSVG(fi, 128)
 			if err != nil {
 				return err
 			}

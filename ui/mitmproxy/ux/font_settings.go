@@ -24,8 +24,10 @@ import (
 
 type fontSettingsDockable struct {
 	SettingsDockable
-	content  *unison.Panel
-	noUpdate bool
+	content         *unison.Panel
+	allFaces        []unison.FontFaceDescriptor
+	monospacedFaces []unison.FontFaceDescriptor
+	noUpdate        bool
 }
 
 // ShowFontSettings shows the Font settings.
@@ -35,7 +37,8 @@ func ShowFontSettings() {
 		return ok
 	})
 	if !found && ws != nil {
-		d := &fontSettingsDockable{}
+		all, monospaced := unison.AllFontFaces()
+		d := &fontSettingsDockable{allFaces: all, monospacedFaces: monospaced}
 		d.Self = d
 		d.TabTitle = i18n.Text("Fonts")
 		d.TabIcon = svg.Settings
@@ -50,7 +53,7 @@ func ShowFontSettings() {
 func (d *fontSettingsDockable) initContent(content *unison.Panel) {
 	d.content = content
 	d.content.SetLayout(&unison.FlexLayout{
-		Columns:  7,
+		Columns:  4,
 		HSpacing: unison.StdHSpacing,
 		VSpacing: unison.StdVSpacing,
 	})
@@ -77,11 +80,8 @@ func (d *fontSettingsDockable) fill() {
 		} else {
 			d.content.AddChild(NewFieldInteriorLeadingLabel(one.Title))
 		}
-		d.createFamilyField(i)
+		d.createFaceField(i)
 		d.createSizeField(i)
-		d.createWeightField(i)
-		d.createSpacingField(i)
-		d.createSlantField(i)
 		d.createResetField(i)
 	}
 	notice := unison.NewLabel()
@@ -89,7 +89,7 @@ func (d *fontSettingsDockable) fill() {
 	notice.Font = unison.SystemFont
 	notice.SetBorder(unison.NewEmptyBorder(unison.Insets{Top: unison.StdVSpacing * 2}))
 	notice.SetLayoutData(&unison.FlexLayoutData{
-		HSpan:  7,
+		HSpan:  4,
 		VSpan:  1,
 		HAlign: unison.MiddleAlignment,
 		VAlign: unison.MiddleAlignment,
@@ -97,19 +97,25 @@ func (d *fontSettingsDockable) fill() {
 	d.content.AddChild(notice)
 }
 
-func (d *fontSettingsDockable) createFamilyField(index int) {
-	p := unison.NewPopupMenu[string]()
-	for _, family := range unison.FontFamilies() {
-		p.AddItem(family)
+func (d *fontSettingsDockable) createFaceField(index int) {
+	p := unison.NewPopupMenu[unison.FontFaceDescriptor]()
+	var list []unison.FontFaceDescriptor
+	if model.CurrentFonts[index].ID == "monospaced" {
+		list = d.monospacedFaces
+	} else {
+		list = d.allFaces
 	}
-	p.Select(model.CurrentFonts[index].Font.Descriptor().Family)
-	p.SelectionCallback = func(_ int, family string) {
+	for _, ffd := range list {
+		p.AddItem(ffd)
+	}
+	p.Select(model.CurrentFonts[index].Font.Descriptor().FontFaceDescriptor)
+	p.SelectionCallback = func(_ int, ffd unison.FontFaceDescriptor) {
 		if d.noUpdate {
 			return
 		}
-		fd := model.CurrentFonts[index].Font.Descriptor()
-		fd.Family = family
-		d.applyFont(index, fd)
+		fd2 := model.CurrentFonts[index].Font.Descriptor()
+		fd2.FontFaceDescriptor = ffd
+		d.applyFont(index, fd2)
 	}
 	d.content.AddChild(p)
 }
@@ -129,57 +135,6 @@ func (d *fontSettingsDockable) createSizeField(index int) {
 		VAlign: unison.MiddleAlignment,
 	})
 	d.content.AddChild(field)
-}
-
-func (d *fontSettingsDockable) createWeightField(index int) {
-	p := unison.NewPopupMenu[unison.FontWeight]()
-	for _, s := range unison.FontWeights {
-		p.AddItem(s)
-	}
-	p.Select(model.CurrentFonts[index].Font.Descriptor().Weight)
-	p.SelectionCallback = func(_ int, item unison.FontWeight) {
-		if d.noUpdate {
-			return
-		}
-		fd := model.CurrentFonts[index].Font.Descriptor()
-		fd.Weight = item
-		d.applyFont(index, fd)
-	}
-	d.content.AddChild(p)
-}
-
-func (d *fontSettingsDockable) createSpacingField(index int) {
-	p := unison.NewPopupMenu[unison.FontSpacing]()
-	for _, s := range unison.Spacings {
-		p.AddItem(s)
-	}
-	p.Select(model.CurrentFonts[index].Font.Descriptor().Spacing)
-	p.SelectionCallback = func(_ int, item unison.FontSpacing) {
-		if d.noUpdate {
-			return
-		}
-		fd := model.CurrentFonts[index].Font.Descriptor()
-		fd.Spacing = item
-		d.applyFont(index, fd)
-	}
-	d.content.AddChild(p)
-}
-
-func (d *fontSettingsDockable) createSlantField(index int) {
-	p := unison.NewPopupMenu[unison.FontSlant]()
-	for _, s := range unison.Slants {
-		p.AddItem(s)
-	}
-	p.Select(model.CurrentFonts[index].Font.Descriptor().Slant)
-	p.SelectionCallback = func(_ int, item unison.FontSlant) {
-		if d.noUpdate {
-			return
-		}
-		fd := model.CurrentFonts[index].Font.Descriptor()
-		fd.Slant = item
-		d.applyFont(index, fd)
-	}
-	d.content.AddChild(p)
 }
 
 func (d *fontSettingsDockable) createResetField(index int) {
@@ -207,23 +162,14 @@ func (d *fontSettingsDockable) createResetField(index int) {
 func (d *fontSettingsDockable) applyFont(index int, fd unison.FontDescriptor) {
 	model.CurrentFonts[index].Font.Font = fd.Font()
 	children := d.content.Children()
-	i := index * 7
+	i := index * 4
 	fd = model.CurrentFonts[index].Font.Descriptor()
 	d.noUpdate = true
-	if p, ok := children[i+1].Self.(*unison.PopupMenu[string]); ok {
-		p.Select(fd.Family)
+	if p, ok := children[i+1].Self.(*unison.PopupMenu[unison.FontFaceDescriptor]); ok {
+		p.Select(fd.FontFaceDescriptor)
 	}
 	if nf, ok := children[i+2].Self.(*DecimalField); ok {
 		nf.SetText(fxp.From(fd.Size).String())
-	}
-	if p, ok := children[i+3].Self.(*unison.PopupMenu[unison.FontWeight]); ok {
-		p.Select(fd.Weight)
-	}
-	if p, ok := children[i+4].Self.(*unison.PopupMenu[unison.FontSpacing]); ok {
-		p.Select(fd.Spacing)
-	}
-	if p, ok := children[i+5].Self.(*unison.PopupMenu[unison.FontSlant]); ok {
-		p.Select(fd.Slant)
 	}
 	d.noUpdate = false
 	unison.ThemeChanged()

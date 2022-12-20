@@ -467,7 +467,7 @@ func processPickerRow[T model.NodeTypes](row T) (revised []T, abort bool) {
 		jot.Error(err)
 		return nil, true
 	}
-	dialog.Button(unison.ModalResponseOK).SetEnabled(false)
+	callback()
 	if dialog.RunModal() == unison.ModalResponseCancel {
 		return nil, true
 	}
@@ -490,10 +490,22 @@ func processPickerRow[T model.NodeTypes](row T) (revised []T, abort bool) {
 func rawPoints(child any) fxp.Int {
 	switch nc := child.(type) {
 	case *model.Skill:
+		if nc.Container() && nc.TemplatePicker != nil && nc.TemplatePicker.Type == model.PointsTemplatePickerType &&
+			nc.TemplatePicker.Qualifier.Compare == model.EqualsNumber {
+			return nc.TemplatePicker.Qualifier.Qualifier
+		}
 		return nc.RawPoints()
 	case *model.Spell:
+		if nc.Container() && nc.TemplatePicker != nil && nc.TemplatePicker.Type == model.PointsTemplatePickerType &&
+			nc.TemplatePicker.Qualifier.Compare == model.EqualsNumber {
+			return nc.TemplatePicker.Qualifier.Qualifier
+		}
 		return nc.RawPoints()
 	case *model.Trait:
+		if nc.Container() && nc.TemplatePicker != nil && nc.TemplatePicker.Type == model.PointsTemplatePickerType &&
+			nc.TemplatePicker.Qualifier.Compare == model.EqualsNumber {
+			return nc.TemplatePicker.Qualifier.Qualifier
+		}
 		return nc.AdjustedPoints()
 	default:
 		return 0

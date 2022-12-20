@@ -70,7 +70,7 @@ func configureRegistry() error {
 		if fi := &model.KnownFileTypes[i]; fi.IsGCSData {
 			// Create the doc icon
 			var overlay image.Image
-			if overlay, err = CreateImageFromSVG(fi, 128); err != nil {
+			if overlay, err = model.CreateImageFromSVG(fi, 128); err != nil {
 				return err
 			}
 			docPath := filepath.Join(appDataDir, fi.Extensions[0][1:]+".ico")
