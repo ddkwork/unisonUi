@@ -90,7 +90,6 @@ func NewTableDockable[T model.NodeTypes](filePath, extension string, provider Ta
 		HGrab:  true,
 		VGrab:  true,
 	})
-
 	d.AddChild(d.createToolbar())
 	d.AddChild(d.scroll)
 
